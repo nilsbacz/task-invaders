@@ -37,6 +37,21 @@ This keeps the repo clean while still generating a full Symfony 8.0 app locally.
 - Update DB creds in `docker-compose.yml`/`docker-compose.prod.yml` as needed.
 - The PHP container runs as your host UID/GID (defaults to 1000/1000). Override with `UID`/`GID` env vars if needed.
 
+### Xdebug (PhpStorm)
+Xdebug is enabled in the dev PHP image and connects to your host on port 9003.
+
+PhpStorm setup:
+- Settings > PHP > Debug: listen on port 9003
+- Settings > PHP > Servers: add `localhost:8080`
+- set path mapping `/var/www/html` -> project root
+- set idekey: PHPSTORM
+- Click "Start Listening for PHP Debug Connections"
+
+If you need to disable Xdebug temporarily:
+```bash
+XDEBUG_MODE=off docker compose up -d --build
+```
+
 ### Common commands
 ```bash
 # Symfony console

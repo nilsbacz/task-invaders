@@ -13,6 +13,7 @@ RUN apt-get update \
         libpng-dev \
         libjpeg-dev \
         libfreetype6-dev \
+        $PHPIZE_DEPS \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         intl \
@@ -20,11 +21,15 @@ RUN apt-get update \
         zip \
         opcache \
         gd \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && apt-get purge -y --auto-remove $PHPIZE_DEPS \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/php.ini
+COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 WORKDIR /var/www/html
