@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 final class RowTest extends TestCase
 {
     #[Test]
-    public function it_exposes_getters_and_setters(): void
+    public function itExposesGettersAndSetters(): void
     {
         $row = new Row();
 

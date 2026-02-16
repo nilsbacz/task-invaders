@@ -17,10 +17,10 @@
     <rule ref="Generic.PHP.ForbiddenFunctions">
         <properties>
             <property name="forbiddenFunctions" type="array">
-                <element value="var_dump"/>
-                <element value="print_r"/>
-                <element value="die"/>
-                <element value="exit"/>
+                <element key="var_dump" value="logger"/>
+                <element key="print_r" value="logger"/>
+                <element key="die" value="throw"/>
+                <element key="exit" value="throw"/>
             </property>
         </properties>
     </rule>

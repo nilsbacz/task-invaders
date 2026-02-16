@@ -52,6 +52,12 @@
         "symfony/polyfill-php84": "*"
     },
     "scripts": {
+        "lint:phpcs": "php ./vendor/bin/phpcs --standard=phpcs.xml",
+        "lint:phpstan": "php ./vendor/bin/phpstan analyse -c phpstan.neon",
+        "lint": [
+            "@lint:phpcs",
+            "@lint:phpstan"
+        ],
         "test": "php -d pcov.enabled=0 ./vendor/bin/phpunit --no-coverage",
         "test:cov": "XDEBUG_MODE=coverage php ./vendor/bin/phpunit --coverage-text --coverage-html var/coverage/html",
         "test:cov:xdebug": "XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-text --coverage-html var/coverage/html",

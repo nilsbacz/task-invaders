@@ -12,6 +12,7 @@ class Sprite
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    /** @phpstan-ignore-next-line */
     private ?int $id = null;
 
     #[ORM\Column(length: 32)]
@@ -48,12 +49,19 @@ class Sprite
         }
 
         if (is_resource($this->spriteData)) {
-            return stream_get_contents($this->spriteData);
+            return (string) stream_get_contents($this->spriteData);
+        }
+
+        if (!is_string($this->spriteData)) {
+            throw new \LogicException('Sprite data must be a string or stream resource.');
         }
 
         return $this->spriteData;
     }
 
+    /**
+     * @param string|resource $spriteData
+     */
     public function setSpriteData(mixed $spriteData): static
     {
         $this->spriteData = $spriteData;

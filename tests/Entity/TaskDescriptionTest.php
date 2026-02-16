@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 final class TaskDescriptionTest extends TestCase
 {
     #[Test]
-    public function it_manages_description_and_tasks_collection(): void
+    public function itManagesDescriptionAndTasksCollection(): void
     {
         $description = new TaskDescription();
 

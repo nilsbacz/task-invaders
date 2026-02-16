@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 final class TaskTest extends TestCase
 {
     #[Test]
-    public function it_sets_defaults_and_keeps_relations_nullable(): void
+    public function itSetsDefaultsAndKeepsRelationsNullable(): void
     {
         $task = new Task();
 
@@ -31,7 +31,7 @@ final class TaskTest extends TestCase
     }
 
     #[Test]
-    public function it_exposes_getters_and_setters(): void
+    public function itExposesGettersAndSetters(): void
     {
         $task = new Task();
         $spawnDate = new DateTimeImmutable('2025-01-01T10:00:00+00:00');

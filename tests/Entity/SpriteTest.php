@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 final class SpriteTest extends TestCase
 {
     #[Test]
-    public function it_exposes_getters_and_setters_with_string_data(): void
+    public function itExposesGettersAndSettersWithStringData(): void
     {
         $sprite = new Sprite();
 
@@ -30,7 +30,7 @@ final class SpriteTest extends TestCase
     }
 
     #[Test]
-    public function it_reads_sprite_data_from_streams(): void
+    public function itReadsSpriteDataFromStreams(): void
     {
         $sprite = new Sprite();
 
@@ -45,5 +45,18 @@ final class SpriteTest extends TestCase
         self::assertSame('stream-bytes', $sprite->getSpriteData());
 
         fclose($handle);
+    }
+
+    #[Test]
+    public function itRejectsInvalidSpriteDataType(): void
+    {
+        $sprite = new Sprite();
+
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Sprite data must be a string or stream resource.');
+
+        /** @phpstan-ignore-next-line */
+        $sprite->setSpriteData(123);
+        $sprite->getSpriteData();
     }
 }

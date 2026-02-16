@@ -11,20 +11,21 @@ class Row
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    /** @phpstan-ignore-next-line */
     private ?int $id = null;
 
     #[ORM\Column(length: 32)]
-    private ?string $title = null;
+    private string $title;
 
-    #[ORM\Column(length: 32)]
-    private ?int $rowNumber = null;
+    #[ORM\Column]
+    private int $rowNumber;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }
