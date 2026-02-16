@@ -63,3 +63,14 @@ docker compose exec php composer
 # Rebuild containers
 docker compose up -d --build
 ```
+
+## 🧠 Development notes
+- ** phpstan **
+  ```bash
+  vendor/bin/phpstan analyse
+  ```
+
+- **Code Fixer**
+  ```bash
+  vendor/bin/phpcbf
+  ```

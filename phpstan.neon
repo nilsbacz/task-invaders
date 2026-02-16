@@ -1,0 +1,17 @@
+parameters:
+    level: max
+    paths:
+        - src/
+        - tests/
+    tmpDir: var/cache/phpstan
+    reportUnmatchedIgnoredErrors: true
+    treatPhpDocTypesAsCertain: true
+    checkMissingTypehints: true
+    checkMissingVarTagTypehint: true
+    checkMissingCallableSignature: true
+    checkUnionTypes: true
+    checkExplicitMixed: true
+    checkExplicitMixedMissingReturn: true
+    checkImplicitMixed: true
+    checkMissingOverrideMethodAttribute: true
+    checkMissingOverridePropertyAttribute: true
