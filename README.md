@@ -16,7 +16,7 @@ docker compose up -d --build
 Services and ports:
 - App: http://localhost:8080
 - MailHog UI: http://localhost:8025
-- MySQL: localhost:3306 (user `app`, pass `app`, db `app`)
+- MySQL: localhost:3306 (user `task-invaders`, pass `task-invaders`, db `task-invaders`)
 
 ### Production stack
 ```bash
