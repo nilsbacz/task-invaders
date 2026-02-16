@@ -28,7 +28,7 @@ jobs:
         env:
             APP_ENV: test
             APP_DEBUG: 0
-            DATABASE_URL: "mysql://task-invaders:task-invaders@127.0.0.1:3306/task-invaders_test?serverVersion=8.4&charset=utf8mb4"
+            DATABASE_URL: "mysql://task-invaders:task-invaders@127.0.0.1:3306/task-invaders?serverVersion=8.4&charset=utf8mb4"
 
         steps:
             -   uses: actions/checkout@v4
