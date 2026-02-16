@@ -65,6 +65,17 @@ docker compose up -d --build
 ```
 
 ## 🧠 Development notes
+
+- **Tests**:  
+  Run inside the root directory:
+  ```bash
+    docker compose exec app composer test
+  ```
+  With coverage:
+  ```bash
+    docker compose exec app composer test:cov
+  ```
+
 - ** phpstan **
   ```bash
   vendor/bin/phpstan analyse
