@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Boards</title>
+    </head>
+    <body>
+        <main>
+            <h1>Boards</h1>
+
+            {% for message in app.flashes('success') %}
+                <p>{{ message }}</p>
+            {% endfor %}
+
+            <section>
+                <h2>Create a new board</h2>
+                {{ form_start(createForm) }}
+                {{ form_row(createForm.title) }}
+                {{ form_row(createForm.isTurretMode) }}
+                {{ form_rest(createForm) }}
+                <button type="submit">Create</button>
+                {{ form_end(createForm, { render_rest: false }) }}
+            </section>
+
+            <section>
+                <h2>Existing boards</h2>
+                {% if boards is empty %}
+                    <p>No boards yet.</p>
+                {% endif %}
+
+                {% for board in boards %}
+                    {% set updateForm = updateForms[board.id] %}
+                    {% set deleteForm = deleteForms[board.id] %}
+                    <article>
+                        <h3>Board {{ board.id }}</h3>
+                        {{ form_start(updateForm) }}
+                        {{ form_row(updateForm.title) }}
+                        {{ form_row(updateForm.isTurretMode) }}
+                        {{ form_rest(updateForm) }}
+                        <button type="submit">Update</button>
+                        {{ form_end(updateForm, { render_rest: false }) }}
+                        {{ form_start(deleteForm) }}
+                        {{ form_rest(deleteForm) }}
+                        <button type="submit">Delete</button>
+                        {{ form_end(deleteForm, { render_rest: false }) }}
+                    </article>
+                {% endfor %}
+            </section>
+        </main>
+    </body>
+</html>
