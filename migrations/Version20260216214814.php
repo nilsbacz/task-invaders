@@ -17,7 +17,7 @@ final class Version20260216214814 extends AbstractMigration
         return 'Initial schema for board, row, sprite, task, and task_description.';
     }
 
-    public function up(Schema $schema): void
+    public function up(Schema $schema): void // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
@@ -82,7 +82,7 @@ ALTER TABLE task
 SQL);
     }
 
-    public function down(Schema $schema): void
+    public function down(Schema $schema): void // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
