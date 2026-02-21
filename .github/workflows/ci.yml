@@ -10,6 +10,7 @@ permissions:
 
 jobs:
     lint:
+        name: php lint
         runs-on: ubuntu-latest
 
         steps:
@@ -40,6 +41,7 @@ jobs:
                 run: ./vendor/bin/phpstan analyse -c phpstan.neon
 
     tests:
+        name: php unit
         runs-on: ubuntu-latest
 
         services:
