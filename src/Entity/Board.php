@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use App\Repository\BoardRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BoardRepository::class)]
 class Board
@@ -17,10 +18,13 @@ class Board
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull]
+    #[Assert\Length(max: 255)]
     private string $title;
 
     #[ORM\Column]
-    private bool $isTurretMode;
+    #[Assert\NotNull]
+    private bool $isTurretMode = false;
 
     public function getId(): ?int
     {

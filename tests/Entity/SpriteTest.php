@@ -6,6 +6,7 @@ namespace App\Tests\Entity;
 
 use App\Entity\Sprite;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -48,7 +49,8 @@ final class SpriteTest extends TestCase
     }
 
     #[Test]
-    public function itRejectsInvalidSpriteDataType(): void
+    #[DataProvider('invalidSpriteDataProvider')]
+    public function itRejectsInvalidSpriteDataType(mixed $spriteData): void
     {
         $sprite = new Sprite();
 
@@ -56,7 +58,20 @@ final class SpriteTest extends TestCase
         $this->expectExceptionMessage('Sprite data must be a string or stream resource.');
 
         /** @phpstan-ignore-next-line */
-        $sprite->setSpriteData(123);
+        $sprite->setSpriteData($spriteData);
         $sprite->getSpriteData();
+    }
+
+    /**
+     * @return array<string, array{mixed}>
+     */
+    public static function invalidSpriteDataProvider(): array
+    {
+        return [
+                'int'    => [123],
+                'array'  => [['invalid']],
+                'object' => [new \stdClass()],
+                'bool'   => [true],
+               ];
     }
 }
