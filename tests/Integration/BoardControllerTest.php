@@ -13,6 +13,7 @@ use App\Service\BoardUpdater;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -20,6 +21,7 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 #[CoversClass(BoardController::class)]
@@ -40,11 +42,13 @@ final class BoardControllerTest extends WebTestCase
                     'debug'       => true,
                    ];
 
-        self::bootKernel($options);
+        $kernel = self::bootKernel($options);
 
-        $container = self::getContainer();
-        /** @var EntityManagerInterface $entityManager */
-        $entityManager = $container->get(EntityManagerInterface::class);
+        $container = $kernel->getContainer();
+        /** @var ManagerRegistry $registry */
+        $registry = $container->get('doctrine');
+        $entityManager = $registry->getManager();
+        self::assertInstanceOf(EntityManagerInterface::class, $entityManager);
         $connection = $entityManager->getConnection();
 
         self::waitForDatabase($connection);
@@ -66,12 +70,16 @@ final class BoardControllerTest extends WebTestCase
         $this->client->disableReboot();
         $this->client->catchExceptions(true);
 
-        $container = self::getContainer();
-        /** @var EntityManagerInterface $entityManager */
-        $entityManager = $container->get(EntityManagerInterface::class);
+        $kernel = self::$kernel;
+        self::assertInstanceOf(KernelInterface::class, $kernel);
+        $container = $kernel->getContainer();
+        /** @var ManagerRegistry $registry */
+        $registry = $container->get('doctrine');
+        $entityManager = $registry->getManager();
+        self::assertInstanceOf(EntityManagerInterface::class, $entityManager);
         $this->entityManager = $entityManager;
-        /** @var BoardRepository $boards */
-        $boards = $container->get(BoardRepository::class);
+        $boards = $entityManager->getRepository(Board::class);
+        self::assertInstanceOf(BoardRepository::class, $boards);
         $this->boards = $boards;
 
         $connection = $this->entityManager->getConnection();
