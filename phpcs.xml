@@ -13,6 +13,7 @@
     <rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>
     <rule ref="Generic.CodeAnalysis.EmptyStatement"/>
     <rule ref="Generic.PHP.DisallowShortOpenTag"/>
+    <rule ref="Generic.PHP.RequireStrictTypes"/>
     <rule ref="Generic.PHP.NoSilencedErrors"/>
     <rule ref="Generic.PHP.ForbiddenFunctions">
         <properties>
@@ -34,5 +35,9 @@
 
     <file>src/</file>
     <file>tests/</file>
+    <file>public/</file>
+    <file>migrations/</file>
+    <file>bin/console</file>
+    <file>bin/phpunit</file>
 
 </ruleset>
