@@ -31,6 +31,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 final class BoardControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
+    private KernelInterface $kernelInstance;
     private EntityManagerInterface $entityManager;
     private BoardRepository $boards;
 
@@ -42,8 +43,8 @@ final class BoardControllerTest extends WebTestCase
                     'debug'       => true,
                    ];
 
-        $kernel = self::bootKernel($options);
-
+        $kernel = self::createKernel($options);
+        $kernel->boot();
         $container = $kernel->getContainer();
         /** @var ManagerRegistry $registry */
         $registry = $container->get('doctrine');
@@ -55,24 +56,24 @@ final class BoardControllerTest extends WebTestCase
         self::resetSchema($entityManager);
 
         $entityManager->close();
-        self::ensureKernelShutdown();
+        $kernel->shutdown();
     }
 
     #[\Override]
     protected function setUp(): void
     {
-        self::ensureKernelShutdown();
         $options = [
                     'environment' => 'test',
                     'debug'       => true,
                    ];
-        $this->client = static::createClient($options);
+        $this->kernelInstance = self::createKernel($options);
+        $this->kernelInstance->boot();
+        $this->client = new KernelBrowser($this->kernelInstance);
+        self::getClient($this->client);
         $this->client->disableReboot();
         $this->client->catchExceptions(true);
 
-        $kernel = self::$kernel;
-        self::assertInstanceOf(KernelInterface::class, $kernel);
-        $container = $kernel->getContainer();
+        $container = $this->kernelInstance->getContainer();
         /** @var ManagerRegistry $registry */
         $registry = $container->get('doctrine');
         $entityManager = $registry->getManager();
@@ -98,8 +99,9 @@ final class BoardControllerTest extends WebTestCase
 
         $this->entityManager->clear();
         $this->entityManager->close();
+        $this->kernelInstance->shutdown();
 
-        unset($this->client, $this->entityManager, $this->boards);
+        unset($this->client, $this->kernelInstance, $this->entityManager, $this->boards);
 
         parent::tearDown();
     }
