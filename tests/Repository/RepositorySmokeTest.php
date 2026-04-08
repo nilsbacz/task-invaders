@@ -30,9 +30,12 @@ final class RepositorySmokeTest extends TestCase
     #[DataProvider('repositoryProvider')]
     public function itConstructsRepositories(string $repositoryClass): void
     {
+
         $registry = $this->createStub(ManagerRegistry::class);
 
+
         $repository = new $repositoryClass($registry);
+
 
         self::assertInstanceOf($repositoryClass, $repository);
         self::assertInstanceOf(ServiceEntityRepository::class, $repository);

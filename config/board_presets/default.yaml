@@ -1,44 +1,36 @@
-key: default
 name: Default Board
 version: 1
 boardRows:
-  - key: sports
-    title: sports
+  - title: sports
     position: 1
     tasks:
-        - key: workout
-          title: workout
-          respawnsIn: 1440 # 24h
-          spawnsEvery: 2880 # 48h
-          reachesBaseIn: 1440
-          hasShield: true
-          riskLevel: YELLOW
-        - key: running
-          title: running
-          respawnsIn: 2880
-          spawnsEvery: 2880
-          reachesBaseIn: 2880
-          riskLevel: GREEN
-  - key: household
-    title: household
+      - title: workout
+        respawnsIn: 1440 # 24h
+        spawnsEvery: 2880 # 48h
+        reachesBaseIn: 1440
+        hasShield: true
+        riskLevel: YELLOW
+      - title: running
+        respawnsIn: 2880
+        spawnsEvery: 2880
+        reachesBaseIn: 2880
+        riskLevel: GREEN
+  - title: household
     position: 2
     tasks:
-        - key: mopFloor
-          title: Mop the floor
-          respawnsIn: 21600 # 15 days
-          spawnsEvery: 21600
-          reachesBaseIn: 43200 # 30 days
-          hasShield: true
-          riskLevel: GREEN
-          respawnImmediately: true
-  - key: projects
-    title: projects
+      - title: Mop the floor
+        respawnsIn: 21600 # 15 days
+        spawnsEvery: 21600
+        reachesBaseIn: 43200 # 30 days
+        hasShield: true
+        riskLevel: GREEN
+        respawnImmediatelyAfterDeath: true
+  - title: projects
     position: 3
     tasks:
-        - key: workOnTaskInvaders
-          title: Work on task Invaders
-          respawns in: 20160 # 2 weeks
-          spawnsEvery: 20160
-          reachesBaseIn: 20160
-          hasShield: false
-          riskLevel: GREEN
+      - title: Work on task Invaders
+        respawnsIn: 20160 # 2 weeks
+        spawnsEvery: 20160
+        reachesBaseIn: 20160
+        hasShield: false
+        riskLevel: GREEN

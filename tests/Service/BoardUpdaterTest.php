@@ -17,6 +17,7 @@ final class BoardUpdaterTest extends TestCase
     #[Test]
     public function itTrimsBoardTitleFlushesAndReturnsBoard(): void
     {
+
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects(self::once())->method('flush');
 
@@ -24,7 +25,9 @@ final class BoardUpdaterTest extends TestCase
         $board = new Board();
         $board->setTitle('  Updated Board  ');
 
+
         $result = $updater->update($board);
+
 
         self::assertSame($board, $result);
         self::assertSame('Updated Board', $board->getTitle());

@@ -16,24 +16,32 @@ final class TaskDescriptionTest extends TestCase
     #[Test]
     public function itManagesDescriptionAndTasksCollection(): void
     {
+
         $description = new TaskDescription();
+        $task = new Task();
 
         self::assertNull($description->getId());
         self::assertCount(0, $description->getTasks());
 
-        self::assertSame($description, $description->setDescription('Complete the mission.'));
+
+        $setDescriptionResult = $description->setDescription('Complete the mission.');
+        $firstAddTaskResult = $description->addTask($task);
+        $secondAddTaskResult = $description->addTask($task);
+
+
+        self::assertSame($description, $setDescriptionResult);
         self::assertSame('Complete the mission.', $description->getDescription());
-
-        $task = new Task();
-        self::assertSame($description, $description->addTask($task));
-        self::assertSame($description, $description->addTask($task));
-
+        self::assertSame($description, $firstAddTaskResult);
+        self::assertSame($description, $secondAddTaskResult);
         self::assertCount(1, $description->getTasks());
         self::assertTrue($description->getTasks()->contains($task));
         self::assertSame($description, $task->getTaskDescription());
 
-        self::assertSame($description, $description->removeTask($task));
 
+        $removeTaskResult = $description->removeTask($task);
+
+
+        self::assertSame($description, $removeTaskResult);
         self::assertCount(0, $description->getTasks());
         self::assertFalse($description->getTasks()->contains($task));
         self::assertNull($task->getTaskDescription());

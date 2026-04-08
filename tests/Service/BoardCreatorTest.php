@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
-use App\BoardPreset\BoardPreset;
-use App\BoardPreset\BoardRowPreset;
 use App\Board\Application\BoardCreator;
 use App\Board\Application\CreateBoard;
 use App\Board\Domain\Board;
 use App\Board\Domain\BoardRow;
+use App\BoardPreset\BoardPreset;
+use App\BoardPreset\BoardRowPreset;
+use App\BoardPreset\BoardTaskPreset;
 use App\Service\BoardPresetApplier;
 use App\Service\BoardPresetLoader;
+use App\Tests\Support\BoardPresetFixture;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -23,6 +25,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(BoardRow::class)]
 #[UsesClass(BoardPreset::class)]
 #[UsesClass(BoardRowPreset::class)]
+#[UsesClass(BoardTaskPreset::class)]
 #[UsesClass(CreateBoard::class)]
 #[UsesClass(BoardPresetApplier::class)]
 #[UsesClass(BoardPresetLoader::class)]
@@ -31,20 +34,13 @@ final class BoardCreatorTest extends TestCase
     #[Test]
     public function itTrimsBoardTitleAndAppliesDefaultPresetWhenBoardHasNoRows(): void
     {
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->expects(self::once())->method('persist');
-        $entityManager->expects(self::once())->method('flush');
 
-        $creator = new BoardCreator(
-            $entityManager,
-            new BoardPresetApplier($this->createPresetLoader()),
-        );
+        $creator = $this->createBoardCreatorFixture();
+        $command = $this->createCommandFixture('  Alpha Board  ', true);
 
-        $command = new CreateBoard();
-        $command->setTitle('  Alpha Board  ');
-        $command->setIsTurretMode(true);
 
         $result = $creator->create($command);
+
 
         self::assertInstanceOf(Board::class, $result);
         self::assertSame('Alpha Board', $result->getTitle());
@@ -60,51 +56,51 @@ final class BoardCreatorTest extends TestCase
                 $result->getBoardRows()->toArray()
             )
         );
+        $boardRows = $result->getBoardRows()->toArray();
+        self::assertCount(2, $boardRows[0]->getTasks());
+        self::assertCount(1, $boardRows[1]->getTasks());
+        self::assertCount(1, $boardRows[2]->getTasks());
     }
 
     #[Test]
     public function itBuildsBoardWithDefaultTurretModeWhenCommandDoesNotEnableIt(): void
     {
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->expects(self::once())->method('persist');
-        $entityManager->expects(self::once())->method('flush');
 
-        $creator = new BoardCreator(
-            $entityManager,
-            new BoardPresetApplier($this->createPresetLoader()),
-        );
+        $creator = $this->createBoardCreatorFixture();
+        $command = $this->createCommandFixture('  Custom Board  ');
 
-        $command = new CreateBoard();
-        $command->setTitle('  Custom Board  ');
 
         $createdBoard = $creator->create($command);
+
 
         self::assertSame('Custom Board', $createdBoard->getTitle());
         self::assertFalse($createdBoard->isTurretMode());
         self::assertCount(3, $createdBoard->getBoardRows());
     }
 
-    private function createPresetLoader(): BoardPresetLoader
+    private function createBoardCreatorFixture(): BoardCreator
     {
-        $directory = sys_get_temp_dir() . '/board-creator-preset-' . bin2hex(random_bytes(8));
-        self::assertTrue(mkdir($directory, 0777, true));
-        $contents = <<<'YAML'
-key: default
-name: Default Board
-version: 1
-boardRows:
-  - key: sports
-    title: sports
-    position: 1
-  - key: household
-    title: household
-    position: 2
-  - key: projects
-    title: projects
-    position: 3
-YAML;
-        self::assertSame(strlen($contents), file_put_contents($directory . '/default.yaml', $contents));
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects(self::once())->method('persist');
+        $entityManager->expects(self::once())->method('flush');
 
-        return new BoardPresetLoader($directory);
+        return new BoardCreator(
+            $entityManager,
+            new BoardPresetApplier($this->createPresetLoaderFixture()),
+        );
+    }
+
+    private function createCommandFixture(string $title, bool $isTurretMode = false): CreateBoard
+    {
+        $command = new CreateBoard();
+        $command->setTitle($title);
+        $command->setIsTurretMode($isTurretMode);
+
+        return $command;
+    }
+
+    private function createPresetLoaderFixture(): BoardPresetLoader
+    {
+        return BoardPresetFixture::createDefaultLoader('board-creator-preset');
     }
 }

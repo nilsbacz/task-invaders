@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Board\Domain;
 
 use App\Board\Infrastructure\Persistence\DoctrineBoardRowRepository;
+use App\Entity\Task;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DoctrineBoardRowRepository::class)]
@@ -26,6 +29,25 @@ class BoardRow
     #[ORM\ManyToOne(inversedBy: 'boardRows')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Board $board = null;
+
+    /**
+     * @var Collection<int, Task>
+     */
+    #[ORM\OneToMany(
+        mappedBy: 'boardRow',
+        targetEntity: Task::class,
+        cascade: [
+                  'persist',
+                  'remove',
+                 ],
+        orphanRemoval: true
+    )]
+    private Collection $tasks;
+
+    public function __construct()
+    {
+        $this->tasks = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -64,6 +86,33 @@ class BoardRow
     public function setBoard(?Board $board): static
     {
         $this->board = $board;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Task>
+     */
+    public function getTasks(): Collection
+    {
+        return $this->tasks;
+    }
+
+    public function addTask(Task $task): static
+    {
+        if (!$this->tasks->contains($task)) {
+            $this->tasks->add($task);
+            $task->setBoardRow($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTask(Task $task): static
+    {
+        if ($this->tasks->removeElement($task)) {
+            $task->setBoardRow(null);
+        }
 
         return $this;
     }

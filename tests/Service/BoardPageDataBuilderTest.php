@@ -22,16 +22,17 @@ final class BoardPageDataBuilderTest extends TestCase
     #[Test]
     public function itBuildsIndexDataWithDefaultForms(): void
     {
-        $boards = [
-                   $this->createBoardWithId(1),
-                   $this->createBoardWithId(2),
-                  ];
-        $repository = $this->createMock(DoctrineBoardRepository::class);
-        $repository->expects(self::once())->method('findAll')->willReturn($boards);
 
-        $builder = new BoardPageDataBuilder($repository, $this->createBoardFormFactory());
+        $boards = [
+                   $this->createBoardFixtureWithId(1),
+                   $this->createBoardFixtureWithId(2),
+                  ];
+        $repository = $this->createRepositoryFixture($boards);
+        $builder = new BoardPageDataBuilder($repository, $this->createBoardFormFactoryFixture());
+
 
         $data = $builder->buildIndexData();
+
 
         self::assertSame($boards, $data['boards']);
         self::assertSame('board_create', $data['createForm']->vars['name']);
@@ -44,29 +45,41 @@ final class BoardPageDataBuilderTest extends TestCase
     #[Test]
     public function itUsesProvidedFormsWhenBuildingIndexData(): void
     {
-        $boards = [
-                   $this->createBoardWithId(1),
-                   $this->createBoardWithId(2),
-                  ];
-        $repository = $this->createMock(DoctrineBoardRepository::class);
-        $repository->expects(self::once())->method('findAll')->willReturn($boards);
 
+        $boards = [
+                   $this->createBoardFixtureWithId(1),
+                   $this->createBoardFixtureWithId(2),
+                  ];
+        $repository = $this->createRepositoryFixture($boards);
         $formFactory = Forms::createFormFactoryBuilder()->getFormFactory();
         $customCreateForm = $formFactory->createNamed('custom_create', data: new CreateBoard());
         $errorUpdateForm = $formFactory->createNamed('board_error_2');
+        $builder = new BoardPageDataBuilder($repository, $this->createBoardFormFactoryFixture());
 
-        $builder = new BoardPageDataBuilder($repository, $this->createBoardFormFactory());
 
         $data = $builder->buildIndexData($customCreateForm, $errorUpdateForm, 2);
+
 
         self::assertSame('custom_create', $data['createForm']->vars['name']);
         self::assertSame('board_1', $data['updateForms'][1]->vars['name']);
         self::assertSame('board_error_2', $data['updateForms'][2]->vars['name']);
     }
 
-    private function createBoardFormFactory(): BoardFormFactory
+    /**
+     * @param list<Board> $boards
+     */
+    private function createRepositoryFixture(array $boards): DoctrineBoardRepository
+    {
+        $repository = $this->createMock(DoctrineBoardRepository::class);
+        $repository->expects(self::once())->method('findAll')->willReturn($boards);
+
+        return $repository;
+    }
+
+    private function createBoardFormFactoryFixture(): BoardFormFactory
     {
         $formFactory = Forms::createFormFactoryBuilder()->getFormFactory();
+
         $urlGenerator = new class () implements UrlGeneratorInterface {
             private RequestContext $context;
 
@@ -82,7 +95,7 @@ final class BoardPageDataBuilderTest extends TestCase
             public function generate(
                 string $name,
                 array $parameters = [],
-                int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH
+                int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH,
             ): string {
                 if ($referenceType !== UrlGeneratorInterface::ABSOLUTE_PATH) {
                     throw new \InvalidArgumentException('Only ABSOLUTE_PATH is supported.');
@@ -96,11 +109,8 @@ final class BoardPageDataBuilderTest extends TestCase
                     throw new \InvalidArgumentException('Missing board id.');
                 }
 
-                $id = $parameters['id'];
-
                 return match ($name) {
-                    'board_update' => sprintf('/boards/%d', $id),
-                    'board_delete' => sprintf('/boards/%d', $id),
+                    'board_update', 'board_delete' => sprintf('/boards/%d', $parameters['id']),
                     default => throw new \InvalidArgumentException('Unknown route.'),
                 };
             }
@@ -121,7 +131,7 @@ final class BoardPageDataBuilderTest extends TestCase
         return new BoardFormFactory($formFactory, $urlGenerator);
     }
 
-    private function createBoardWithId(int $id): Board
+    private function createBoardFixtureWithId(int $id): Board
     {
         $board = new Board();
         $reflection = new \ReflectionProperty(Board::class, 'id');

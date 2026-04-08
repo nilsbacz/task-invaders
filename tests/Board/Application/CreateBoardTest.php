@@ -15,14 +15,19 @@ final class CreateBoardTest extends TestCase
     #[Test]
     public function itExposesGettersAndSetters(): void
     {
+
         $command = new CreateBoard();
 
         self::assertSame('', $command->getTitle());
         self::assertFalse($command->isTurretMode());
 
-        self::assertSame($command, $command->setTitle('Alpha Board'));
-        self::assertSame($command, $command->setIsTurretMode(true));
 
+        $setTitleResult = $command->setTitle('Alpha Board');
+        $setTurretModeResult = $command->setIsTurretMode(true);
+
+
+        self::assertSame($command, $setTitleResult);
+        self::assertSame($command, $setTurretModeResult);
         self::assertSame('Alpha Board', $command->getTitle());
         self::assertTrue($command->isTurretMode());
     }

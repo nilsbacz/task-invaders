@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Board\Domain\BoardRow;
 use App\Enum\TaskRiskLevel;
 use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
@@ -21,8 +22,9 @@ class Task
     #[ORM\Column(length: 32)]
     private string $title;
 
-    #[ORM\Column(name: 'board_row_id')]
-    private int $boardRowId;
+    #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[ORM\JoinColumn(name: 'board_row_id', nullable: false)]
+    private ?BoardRow $boardRow = null;
 
     #[ORM\Column(
         type: Types::STRING,
@@ -76,14 +78,14 @@ class Task
         return $this;
     }
 
-    public function getBoardRowId(): int
+    public function getBoardRow(): ?BoardRow
     {
-        return $this->boardRowId;
+        return $this->boardRow;
     }
 
-    public function setBoardRowId(int $boardRowId): static
+    public function setBoardRow(?BoardRow $boardRow): static
     {
-        $this->boardRowId = $boardRowId;
+        $this->boardRow = $boardRow;
 
         return $this;
     }

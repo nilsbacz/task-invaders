@@ -15,6 +15,7 @@ final class BoardControllerTest extends AbstractDatabaseWebTestCase
     #[Test]
     public function itShowsBoardById(): void
     {
+
         $board = $this->createBoard('Show Board', true);
 
         $this->client->request('GET', sprintf('/boards/%d', $board->getId()));
@@ -26,8 +27,10 @@ final class BoardControllerTest extends AbstractDatabaseWebTestCase
     #[Test]
     public function itReturnsNotFoundForMissingBoard(): void
     {
+
         $this->client->catchExceptions(false);
         $this->expectException(NotFoundHttpException::class);
+
 
         $this->client->request('GET', '/boards/99999');
     }
