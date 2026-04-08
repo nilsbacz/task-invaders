@@ -21,7 +21,9 @@ final class BoardTypeTest extends TypeTestCase
     #[Test]
     public function itBuildsExpectedFieldsAndOptions(): void
     {
+
         $form = $this->factory->create(BoardType::class);
+
 
         self::assertSame(Board::class, $form->getConfig()->getOption('data_class'));
 
@@ -45,12 +47,15 @@ final class BoardTypeTest extends TypeTestCase
     #[Test]
     public function itSubmitsDataIntoBoard(): void
     {
+
         $form = $this->factory->create(BoardType::class);
+
 
         $form->submit([
                        'title'        => 'Form Board',
                        'isTurretMode' => true,
                       ]);
+
 
         self::assertTrue($form->isSynchronized());
 
@@ -63,12 +68,15 @@ final class BoardTypeTest extends TypeTestCase
     #[Test]
     public function itCanBindToCreateBoardCommand(): void
     {
+
         $form = $this->factory->create(BoardType::class, new CreateBoard(), ['data_class' => CreateBoard::class]);
+
 
         $form->submit([
                        'title'        => 'Command Board',
                        'isTurretMode' => true,
                       ]);
+
 
         self::assertTrue($form->isSynchronized());
 
@@ -81,8 +89,10 @@ final class BoardTypeTest extends TypeTestCase
     #[Test]
     public function itAllowsCustomTitleMaxLength(): void
     {
+
         $form = $this->factory->create(BoardType::class, options: ['title_max_length' => 120]);
         $titleField = $form->get('title');
+
 
         $titleAttrs = $titleField->getConfig()->getOption('attr');
         self::assertIsArray($titleAttrs);

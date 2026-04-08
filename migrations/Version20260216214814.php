@@ -52,7 +52,7 @@ CREATE TABLE task (
     id INT AUTO_INCREMENT NOT NULL,
     title VARCHAR(32) NOT NULL,
     board_row_id INT NOT NULL,
-    risk_level SMALLINT NOT NULL,
+    risk_level ENUM('GREEN', 'YELLOW', 'RED') NOT NULL,
     spawn_date DATETIME NOT NULL,
     respawns_in INT DEFAULT 0 NOT NULL,
     spawns_every INT DEFAULT 0 NOT NULL,
@@ -62,6 +62,7 @@ CREATE TABLE task (
     speed_factor INT DEFAULT 0 NOT NULL,
     task_description_id INT DEFAULT NULL,
     sprite_id INT DEFAULT NULL,
+    INDEX IDX_527EDB2536A31431 (board_row_id),
     INDEX IDX_527EDB2511B6E0C4 (task_description_id),
     INDEX IDX_527EDB254ED1B8A2 (sprite_id),
     PRIMARY KEY (id)
@@ -80,6 +81,10 @@ ALTER TABLE board_row
 SQL);
         $this->addSql(<<<'SQL'
 ALTER TABLE task
+    ADD CONSTRAINT FK_527EDB2536A31431 FOREIGN KEY (board_row_id) REFERENCES board_row (id)
+SQL);
+        $this->addSql(<<<'SQL'
+ALTER TABLE task
     ADD CONSTRAINT FK_527EDB2511B6E0C4 FOREIGN KEY (task_description_id) REFERENCES task_description (id)
 SQL);
         $this->addSql(<<<'SQL'
@@ -91,6 +96,9 @@ SQL);
     public function down(Schema $schema): void // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
     {
         // this down() migration is auto-generated, please modify it to your needs
+        $this->addSql(<<<'SQL'
+ALTER TABLE task DROP FOREIGN KEY FK_527EDB2536A31431
+SQL);
         $this->addSql(<<<'SQL'
 ALTER TABLE board_row DROP FOREIGN KEY FK_4A717A57E7A1254A
 SQL);

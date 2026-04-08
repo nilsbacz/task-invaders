@@ -6,53 +6,69 @@ namespace App\Tests\Service;
 
 use App\BoardPreset\BoardPreset;
 use App\BoardPreset\BoardRowPreset;
+use App\BoardPreset\BoardTaskPreset;
 use App\Service\BoardPresetLoader;
+use App\Tests\Support\BoardPresetFixture;
+use App\Tests\Support\BoardPresetSerializerFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-#[CoversClass(BoardPreset::class)]
-#[CoversClass(BoardRowPreset::class)]
 #[CoversClass(BoardPresetLoader::class)]
+#[UsesClass(BoardPreset::class)]
+#[UsesClass(BoardRowPreset::class)]
+#[UsesClass(BoardTaskPreset::class)]
 final class BoardPresetLoaderTest extends TestCase
 {
     #[Test]
     public function itLoadsBoardPresetFromYaml(): void
     {
-        $directory = $this->createPresetDirectory(<<<'YAML'
-key: default
+
+        $directory = $this->createPresetDirectoryFixture(<<<'YAML'
 name: Demo Preset
 version: 2
 boardRows:
-  - key: sports
-    title: sports
+  - title: sports
     position: 1
-  - key: running
-    title: running
+    tasks:
+      - title: workout
+        respawnsIn: 10
+        spawnsEvery: 20
+        reachesBaseIn: 30
+        riskLevel: YELLOW
+  - title: projects
     position: 2
+    tasks: []
 YAML);
+        $loader = $this->createLoaderFixture($directory);
 
-        $loader = new BoardPresetLoader($directory);
 
         $preset = $loader->load('default');
+
 
         self::assertSame('default', $preset->key);
         self::assertSame('Demo Preset', $preset->name);
         self::assertSame(2, $preset->version);
         self::assertCount(2, $preset->boardRows);
-        self::assertSame('sports', $preset->boardRows[0]->key);
         self::assertSame('sports', $preset->boardRows[0]->title);
         self::assertSame(1, $preset->boardRows[0]->position);
+        self::assertCount(1, $preset->boardRows[0]->tasks);
+        self::assertSame('workout', $preset->boardRows[0]->tasks[0]->title);
+        self::assertFalse($preset->boardRows[0]->tasks[0]->hasShield);
+        self::assertFalse($preset->boardRows[0]->tasks[0]->respawnImmediatelyAfterDeath);
+        self::assertSame(0, $preset->boardRows[0]->tasks[0]->speedFactor);
     }
 
     #[Test]
     public function itRejectsMissingPresetFiles(): void
     {
-        $loader = new BoardPresetLoader(sys_get_temp_dir());
 
+        $loader = $this->createLoaderFixture(sys_get_temp_dir());
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Board preset "missing" was not found.');
+
 
         $loader->load('missing');
     }
@@ -60,102 +76,204 @@ YAML);
     #[Test]
     public function itRejectsInvalidPresetPayloads(): void
     {
-        $directory = $this->createPresetDirectory('not-an-array');
-        $loader = new BoardPresetLoader($directory);
 
+        $directory = $this->createPresetDirectoryFixture('not-an-array');
+        $loader = $this->createLoaderFixture($directory);
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Board preset "default" is invalid.');
+
 
         $loader->load('default');
     }
 
     #[Test]
-    #[DataProvider('invalidPresetProvider')]
-    public function itRejectsMalformedPresetDefinitions(string $contents, string $expectedMessage): void
+    public function itRejectsMalformedPresetDefinitions(): void
     {
-        $directory = $this->createPresetDirectory($contents);
-        $loader = new BoardPresetLoader($directory);
 
+        $directory = $this->createPresetDirectoryFixture(<<<'YAML'
+name: Demo Preset
+version: 1
+boardRows:
+  - title: sports
+    position: 1
+    tasks:
+      - title: workout
+        respawnsIn: 10
+        spawnsEvery: 20
+        reachesBaseIn: 30
+        riskLevel: BLUE
+YAML);
+        $loader = $this->createLoaderFixture($directory);
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage($expectedMessage);
+        $this->expectExceptionMessage('Board preset "default" is invalid:');
+
 
         $loader->load('default');
     }
 
-    /**
-     * @return array<string, array{0: string, 1: string}>
-     */
-    public static function invalidPresetProvider(): array
+    #[Test]
+    public function itRejectsMissingBoardRowsList(): void
     {
-        return [
-                'missing key'               => [
-                                                <<<'YAML'
+
+        $loader = $this->createLoaderFixture($this->createPresetDirectoryFixture(<<<'YAML'
 name: Demo Preset
 version: 1
-boardRows: []
-YAML,
-                                                'Board preset "default" field "key" must be a non-empty string.',
-                                               ],
-                'invalid version'           => [
-                                                <<<'YAML'
-key: default
-name: Demo Preset
-version: wrong
-boardRows: []
-YAML,
-                                                'Board preset "default" field "version" must be an integer.',
-                                               ],
-                'missing boardRows'         => [
-                                                <<<'YAML'
-key: default
-name: Demo Preset
-version: 1
-YAML,
-                                                'Board preset "default" must define a boardRows list.',
-                                               ],
-                'invalid boardRow entry'    => [
-                                                <<<'YAML'
-key: default
+YAML));
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Board preset "default" is invalid.');
+
+
+        $loader->load('default');
+    }
+
+    #[Test]
+    public function itRejectsInvalidBoardRowEntries(): void
+    {
+
+        $loader = $this->createLoaderFixture($this->createPresetDirectoryFixture(<<<'YAML'
 name: Demo Preset
 version: 1
 boardRows:
   - invalid
-YAML,
-                                                'Board preset "default" boardRow 0 is invalid.',
-                                               ],
-                'invalid boardRow title'    => [
-                                                <<<'YAML'
-key: default
-name: Demo Preset
-version: 1
-boardRows:
-  - key: sports
-    title: ""
-    position: 1
-YAML,
-                                                'Board preset "default" field "title" must be a non-empty string.',
-                                               ],
-                'invalid boardRow position' => [
-                                                <<<'YAML'
-key: default
-name: Demo Preset
-version: 1
-boardRows:
-  - key: sports
-    title: sports
-    position: wrong
-YAML,
-                                                'Board preset "default" field "position" must be an integer.',
-                                               ],
-               ];
+YAML));
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Board preset "default" is invalid.');
+
+
+        $loader->load('default');
     }
 
-    private function createPresetDirectory(string $contents): string
+    #[Test]
+    public function itRejectsMissingTasksList(): void
     {
-        $directory = sys_get_temp_dir() . '/board-preset-loader-' . bin2hex(random_bytes(8));
-        self::assertTrue(mkdir($directory, 0777, true));
-        self::assertSame(strlen($contents), file_put_contents($directory . '/default.yaml', $contents));
 
-        return $directory;
+        $loader = $this->createLoaderFixture($this->createPresetDirectoryFixture(<<<'YAML'
+name: Demo Preset
+version: 1
+boardRows:
+  - title: sports
+    position: 1
+YAML));
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Board preset "default" is invalid.');
+
+
+        $loader->load('default');
+    }
+
+    #[Test]
+    public function itRejectsInvalidTaskEntries(): void
+    {
+
+        $loader = $this->createLoaderFixture($this->createPresetDirectoryFixture(<<<'YAML'
+name: Demo Preset
+version: 1
+boardRows:
+  - title: sports
+    position: 1
+    tasks:
+      - invalid
+YAML));
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Board preset "default" is invalid.');
+
+
+        $loader->load('default');
+    }
+
+    #[Test]
+    public function itRejectsUnexpectedSerializerResults(): void
+    {
+
+        $denormalizer = $this->createMock(DenormalizerInterface::class);
+        $denormalizer
+            ->expects(self::once())
+            ->method('denormalize')
+            ->willReturn(new \stdClass());
+        $loader = new BoardPresetLoader(
+            $denormalizer,
+            $this->createPresetDirectoryFixture(<<<'YAML'
+name: Demo Preset
+version: 1
+boardRows: []
+YAML)
+        );
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Board preset "default" is invalid.');
+
+
+        $loader->load('default');
+    }
+
+    #[Test]
+    public function itRejectsUnexpectedBoardRowResults(): void
+    {
+
+        $denormalizer = $this->createMock(DenormalizerInterface::class);
+        $denormalizer
+            ->expects(self::once())
+            ->method('denormalize')
+            ->willReturn(new \stdClass());
+        $loader = new BoardPresetLoader(
+            $denormalizer,
+            $this->createPresetDirectoryFixture(<<<'YAML'
+name: Demo Preset
+version: 1
+boardRows:
+  - title: sports
+    position: 1
+    tasks: []
+YAML)
+        );
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Board preset "default" is invalid.');
+
+
+        $loader->load('default');
+    }
+
+    #[Test]
+    public function itRejectsUnexpectedTaskResults(): void
+    {
+
+        $denormalizer = $this->createMock(DenormalizerInterface::class);
+        $denormalizer
+            ->expects(self::once())
+            ->method('denormalize')
+            ->willReturn(new \stdClass());
+        $loader = new BoardPresetLoader(
+            $denormalizer,
+            $this->createPresetDirectoryFixture(<<<'YAML'
+name: Demo Preset
+version: 1
+boardRows:
+  - title: sports
+    position: 1
+    tasks:
+      - title: workout
+        respawnsIn: 10
+        spawnsEvery: 20
+        reachesBaseIn: 30
+        riskLevel: GREEN
+YAML)
+        );
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Board preset "default" is invalid.');
+
+
+        $loader->load('default');
+    }
+
+    private function createPresetDirectoryFixture(string $contents): string
+    {
+        return BoardPresetFixture::createDirectory($contents, 'board-preset-loader');
+    }
+
+    private function createLoaderFixture(string $directory): BoardPresetLoader
+    {
+        return new BoardPresetLoader(
+            BoardPresetSerializerFactory::create(),
+            $directory,
+        );
     }
 }

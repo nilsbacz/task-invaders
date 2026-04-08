@@ -6,12 +6,16 @@ namespace App\Service;
 
 use App\BoardPreset\BoardPreset;
 use App\BoardPreset\BoardRowPreset;
+use App\BoardPreset\BoardTaskPreset;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Yaml\Yaml;
 
 final readonly class BoardPresetLoader
 {
     public function __construct(
+        private DenormalizerInterface $denormalizer,
         #[Autowire('%kernel.project_dir%/config/board_presets')]
         private string $presetDirectory,
     ) {
@@ -29,73 +33,91 @@ final readonly class BoardPresetLoader
             throw new \RuntimeException(sprintf('Board preset "%s" is invalid.', $presetKey));
         }
         /** @var array<string, mixed> $data */
+        $data['key'] = $presetKey;
 
-        return new BoardPreset(
-            key: $this->requireString($data, 'key', $presetKey),
-            name: $this->requireString($data, 'name', $presetKey),
-            version: $this->requireInt($data, 'version', $presetKey),
-            boardRows: $this->hydrateBoardRows($data['boardRows'] ?? null, $presetKey),
-        );
+        try {
+            $data['boardRows'] = $this->denormalizeBoardRows($presetKey, $data['boardRows'] ?? null);
+            $preset = $this->denormalize($data, BoardPreset::class);
+        } catch (ExceptionInterface | \TypeError | \ValueError $exception) {
+            throw new \RuntimeException(sprintf(
+                'Board preset "%s" is invalid: %s',
+                $presetKey,
+                $exception->getMessage()
+            ), previous: $exception);
+        }
+
+        if (!$preset instanceof BoardPreset) {
+            throw new \RuntimeException(sprintf('Board preset "%s" is invalid.', $presetKey));
+        }
+
+        return $preset;
     }
 
     /**
-     * @param mixed $boardRows
      * @return list<BoardRowPreset>
+     * @throws ExceptionInterface
      */
-    private function hydrateBoardRows(mixed $boardRows, string $presetKey): array
+    private function denormalizeBoardRows(string $presetKey, mixed $boardRows): array
     {
         if (!is_array($boardRows)) {
-            throw new \RuntimeException(sprintf('Board preset "%s" must define a boardRows list.', $presetKey));
+            throw new \RuntimeException(sprintf('Board preset "%s" is invalid.', $presetKey));
         }
 
-        $result = [];
-        foreach ($boardRows as $index => $boardRow) {
-            if (!is_array($boardRow)) {
-                throw new \RuntimeException(sprintf('Board preset "%s" boardRow %d is invalid.', $presetKey, $index));
+        $boardRowPresets = [];
+
+        foreach ($boardRows as $boardRowData) {
+            if (!is_array($boardRowData)) {
+                throw new \RuntimeException(sprintf('Board preset "%s" is invalid.', $presetKey));
             }
-            /** @var array<string, mixed> $boardRow */
 
-            $result[] = new BoardRowPreset(
-                key: $this->requireString($boardRow, 'key', $presetKey),
-                title: $this->requireString($boardRow, 'title', $presetKey),
-                position: $this->requireInt($boardRow, 'position', $presetKey),
-            );
+            $boardRowData['tasks'] = $this->denormalizeTasks($presetKey, $boardRowData['tasks'] ?? null);
+            $boardRowPreset = $this->denormalize($boardRowData, BoardRowPreset::class);
+
+            if (!$boardRowPreset instanceof BoardRowPreset) {
+                throw new \RuntimeException(sprintf('Board preset "%s" is invalid.', $presetKey));
+            }
+
+            $boardRowPresets[] = $boardRowPreset;
         }
 
-        return $result;
+        return $boardRowPresets;
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @return list<BoardTaskPreset>
+     * @throws ExceptionInterface
      */
-    private function requireString(array $data, string $field, string $presetKey): string
+    private function denormalizeTasks(string $presetKey, mixed $tasks): array
     {
-        $value = $data[$field] ?? null;
-        if (!is_string($value) || $value === '') {
-            throw new \RuntimeException(sprintf(
-                'Board preset "%s" field "%s" must be a non-empty string.',
-                $presetKey,
-                $field
-            ));
+        if (!is_array($tasks)) {
+            throw new \RuntimeException(sprintf('Board preset "%s" is invalid.', $presetKey));
         }
 
-        return $value;
+        $taskPresets = [];
+
+        foreach ($tasks as $taskData) {
+            if (!is_array($taskData)) {
+                throw new \RuntimeException(sprintf('Board preset "%s" is invalid.', $presetKey));
+            }
+
+            $taskPreset = $this->denormalize($taskData, BoardTaskPreset::class);
+
+            if (!$taskPreset instanceof BoardTaskPreset) {
+                throw new \RuntimeException(sprintf('Board preset "%s" is invalid.', $presetKey));
+            }
+
+            $taskPresets[] = $taskPreset;
+        }
+
+        return $taskPresets;
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<int|string, mixed> $data
+     * @throws ExceptionInterface
      */
-    private function requireInt(array $data, string $field, string $presetKey): int
+    private function denormalize(array $data, string $type): mixed
     {
-        $value = $data[$field] ?? null;
-        if (!is_int($value)) {
-            throw new \RuntimeException(sprintf(
-                'Board preset "%s" field "%s" must be an integer.',
-                $presetKey,
-                $field
-            ));
-        }
-
-        return $value;
+        return $this->denormalizer->denormalize($data, $type);
     }
 }

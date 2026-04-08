@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Board\Domain\BoardRow;
+use App\Enum\TaskRiskLevel;
 use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,11 +22,17 @@ class Task
     #[ORM\Column(length: 32)]
     private string $title;
 
-    #[ORM\Column(name: 'board_row_id')]
-    private int $boardRowId;
+    #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[ORM\JoinColumn(name: 'board_row_id', nullable: false)]
+    private ?BoardRow $boardRow = null;
 
-    #[ORM\Column(type: Types::SMALLINT)]
-    private int $riskLevel;
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 6,
+        enumType: TaskRiskLevel::class,
+        columnDefinition: "ENUM('GREEN', 'YELLOW', 'RED') NOT NULL"
+    )]
+    private TaskRiskLevel $riskLevel;
 
     #[ORM\Column]
     private \DateTimeImmutable $spawnDate;
@@ -70,24 +78,24 @@ class Task
         return $this;
     }
 
-    public function getBoardRowId(): int
+    public function getBoardRow(): ?BoardRow
     {
-        return $this->boardRowId;
+        return $this->boardRow;
     }
 
-    public function setBoardRowId(int $boardRowId): static
+    public function setBoardRow(?BoardRow $boardRow): static
     {
-        $this->boardRowId = $boardRowId;
+        $this->boardRow = $boardRow;
 
         return $this;
     }
 
-    public function getRiskLevel(): int
+    public function getRiskLevel(): TaskRiskLevel
     {
         return $this->riskLevel;
     }
 
-    public function setRiskLevel(int $riskLevel): static
+    public function setRiskLevel(TaskRiskLevel $riskLevel): static
     {
         $this->riskLevel = $riskLevel;
 

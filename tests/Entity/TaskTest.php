@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Entity;
 
+use App\Board\Domain\BoardRow;
+use App\Enum\TaskRiskLevel;
 use App\Entity\Sprite;
 use App\Entity\Task;
 use App\Entity\TaskDescription;
@@ -18,7 +20,9 @@ final class TaskTest extends TestCase
     #[Test]
     public function itSetsDefaultsAndKeepsRelationsNullable(): void
     {
+
         $task = new Task();
+
 
         self::assertNull($task->getId());
         self::assertSame(0, $task->getRespawnsIn());
@@ -33,27 +37,43 @@ final class TaskTest extends TestCase
     #[Test]
     public function itExposesGettersAndSetters(): void
     {
+
         $task = new Task();
         $spawnDate = new DateTimeImmutable('2025-01-01T10:00:00+00:00');
+        $boardRow = new BoardRow();
         $description = new TaskDescription();
         $sprite = new Sprite();
 
-        self::assertSame($task, $task->setTitle('Defend the base'));
-        self::assertSame($task, $task->setBoardRowId(7));
-        self::assertSame($task, $task->setRiskLevel(2));
-        self::assertSame($task, $task->setSpawnDate($spawnDate));
-        self::assertSame($task, $task->setRespawnsIn(5));
-        self::assertSame($task, $task->setSpawnsEvery(10));
-        self::assertSame($task, $task->setReachesBaseIn(3));
-        self::assertSame($task, $task->setHasShield(true));
-        self::assertSame($task, $task->setRespawnImmediatelyAfterDeath(true));
-        self::assertSame($task, $task->setSpeedFactor(4));
-        self::assertSame($task, $task->setTaskDescription($description));
-        self::assertSame($task, $task->setSprite($sprite));
 
+        $setTitleResult = $task->setTitle('Defend the base');
+        $setBoardRowResult = $task->setBoardRow($boardRow);
+        $setRiskLevelResult = $task->setRiskLevel(TaskRiskLevel::YELLOW);
+        $setSpawnDateResult = $task->setSpawnDate($spawnDate);
+        $setRespawnsInResult = $task->setRespawnsIn(5);
+        $setSpawnsEveryResult = $task->setSpawnsEvery(10);
+        $setReachesBaseInResult = $task->setReachesBaseIn(3);
+        $setHasShieldResult = $task->setHasShield(true);
+        $setRespawnImmediatelyAfterDeathResult = $task->setRespawnImmediatelyAfterDeath(true);
+        $setSpeedFactorResult = $task->setSpeedFactor(4);
+        $setTaskDescriptionResult = $task->setTaskDescription($description);
+        $setSpriteResult = $task->setSprite($sprite);
+
+
+        self::assertSame($task, $setTitleResult);
+        self::assertSame($task, $setBoardRowResult);
+        self::assertSame($task, $setRiskLevelResult);
+        self::assertSame($task, $setSpawnDateResult);
+        self::assertSame($task, $setRespawnsInResult);
+        self::assertSame($task, $setSpawnsEveryResult);
+        self::assertSame($task, $setReachesBaseInResult);
+        self::assertSame($task, $setHasShieldResult);
+        self::assertSame($task, $setRespawnImmediatelyAfterDeathResult);
+        self::assertSame($task, $setSpeedFactorResult);
+        self::assertSame($task, $setTaskDescriptionResult);
+        self::assertSame($task, $setSpriteResult);
         self::assertSame('Defend the base', $task->getTitle());
-        self::assertSame(7, $task->getBoardRowId());
-        self::assertSame(2, $task->getRiskLevel());
+        self::assertSame($boardRow, $task->getBoardRow());
+        self::assertSame(TaskRiskLevel::YELLOW, $task->getRiskLevel());
         self::assertSame($spawnDate, $task->getSpawnDate());
         self::assertSame(5, $task->getRespawnsIn());
         self::assertSame(10, $task->getSpawnsEvery());

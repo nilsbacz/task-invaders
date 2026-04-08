@@ -16,13 +16,18 @@ final class BoardTest extends TestCase
     #[Test]
     public function itExposesGettersAndSetters(): void
     {
+
         $board = new Board();
 
         self::assertNull($board->getId());
 
-        self::assertSame($board, $board->setTitle('Main Board'));
-        self::assertSame($board, $board->setIsTurretMode(true));
 
+        $setTitleResult = $board->setTitle('Main Board');
+        $setTurretModeResult = $board->setIsTurretMode(true);
+
+
+        self::assertSame($board, $setTitleResult);
+        self::assertSame($board, $setTurretModeResult);
         self::assertSame('Main Board', $board->getTitle());
         self::assertTrue($board->isTurretMode());
         self::assertCount(0, $board->getBoardRows());
@@ -31,14 +36,23 @@ final class BoardTest extends TestCase
     #[Test]
     public function itManagesBoardRows(): void
     {
+
         $board = new Board();
         $boardRow = new BoardRow();
 
-        self::assertSame($board, $board->addBoardRow($boardRow));
+
+        $addBoardRowResult = $board->addBoardRow($boardRow);
+
+
+        self::assertSame($board, $addBoardRowResult);
         self::assertCount(1, $board->getBoardRows());
         self::assertSame($board, $boardRow->getBoard());
 
-        self::assertSame($board, $board->removeBoardRow($boardRow));
+
+        $removeBoardRowResult = $board->removeBoardRow($boardRow);
+
+
+        self::assertSame($board, $removeBoardRowResult);
         self::assertCount(0, $board->getBoardRows());
         self::assertNull($boardRow->getBoard());
     }

@@ -17,6 +17,7 @@ final class BoardDeleterTest extends TestCase
     #[Test]
     public function itRemovesBoardAndFlushes(): void
     {
+
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $board = new Board();
 
@@ -24,6 +25,8 @@ final class BoardDeleterTest extends TestCase
         $entityManager->expects(self::once())->method('flush');
 
         $deleter = new BoardDeleter($entityManager);
+
+
         $deleter->delete($board);
     }
 }

@@ -16,15 +16,19 @@ final class SpriteTest extends TestCase
     #[Test]
     public function itExposesGettersAndSettersWithStringData(): void
     {
+
         $sprite = new Sprite();
 
         self::assertNull($sprite->getId());
         self::assertNull($sprite->getSpriteData());
 
-        self::assertSame($sprite, $sprite->setTitle('Hero'));
-        self::assertSame($sprite, $sprite->setColor('#ff00ff'));
-        self::assertSame($sprite, $sprite->setSpriteData('raw-bytes'));
+        $setTitleResult = $sprite->setTitle('Hero');
+        $setColorResult = $sprite->setColor('#ff00ff');
+        $setSpriteDataResult = $sprite->setSpriteData('raw-bytes');
 
+        self::assertSame($sprite, $setTitleResult);
+        self::assertSame($sprite, $setColorResult);
+        self::assertSame($sprite, $setSpriteDataResult);
         self::assertSame('Hero', $sprite->getTitle());
         self::assertSame('#ff00ff', $sprite->getColor());
         self::assertSame('raw-bytes', $sprite->getSpriteData());
@@ -33,6 +37,7 @@ final class SpriteTest extends TestCase
     #[Test]
     public function itReadsSpriteDataFromStreams(): void
     {
+
         $sprite = new Sprite();
 
         $handle = fopen('php://memory', 'r+');
@@ -41,8 +46,11 @@ final class SpriteTest extends TestCase
         fwrite($handle, 'stream-bytes');
         rewind($handle);
 
-        self::assertSame($sprite, $sprite->setSpriteData($handle));
 
+        $setSpriteDataResult = $sprite->setSpriteData($handle);
+
+
+        self::assertSame($sprite, $setSpriteDataResult);
         self::assertSame('stream-bytes', $sprite->getSpriteData());
 
         fclose($handle);
@@ -52,10 +60,12 @@ final class SpriteTest extends TestCase
     #[DataProvider('invalidSpriteDataProvider')]
     public function itRejectsInvalidSpriteDataType(mixed $spriteData): void
     {
+
         $sprite = new Sprite();
 
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('Sprite data must be a string or stream resource.');
+
 
         /** @phpstan-ignore-next-line */
         $sprite->setSpriteData($spriteData);
