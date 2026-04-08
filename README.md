@@ -69,11 +69,11 @@ docker compose up -d --build
 - **Tests**:  
   Run inside the root directory:
   ```bash
-    docker compose exec app composer test
+    docker compose exec php composer test
   ```
   With coverage:
   ```bash
-    docker compose exec app composer test:cov
+    docker compose exec php composer test:cov
   ```
 
 - ** phpstan **
