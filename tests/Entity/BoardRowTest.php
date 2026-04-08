@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Entity;
 
-use App\Entity\Board;
-use App\Entity\BoardRow;
+use App\Board\Domain\Board;
+use App\Board\Domain\BoardRow;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

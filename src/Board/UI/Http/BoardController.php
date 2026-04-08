@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Controller;
+namespace App\Board\UI\Http;
 
-use App\Entity\Board;
+use App\Board\Domain\Board;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;

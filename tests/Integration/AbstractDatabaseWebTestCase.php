@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration;
 
-use App\Entity\Board;
-use App\Repository\BoardRepository;
+use App\Board\Domain\Board;
+use App\Board\Infrastructure\Persistence\DoctrineBoardRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -19,7 +19,7 @@ abstract class AbstractDatabaseWebTestCase extends WebTestCase
     protected KernelBrowser $client;
     protected KernelInterface $kernelInstance;
     protected EntityManagerInterface $entityManager;
-    protected BoardRepository $boards;
+    protected DoctrineBoardRepository $boards;
 
     #[\Override]
     public static function setUpBeforeClass(): void
@@ -63,7 +63,7 @@ abstract class AbstractDatabaseWebTestCase extends WebTestCase
         $this->entityManager = $entityManager;
 
         $boards = $entityManager->getRepository(Board::class);
-        self::assertInstanceOf(BoardRepository::class, $boards);
+        self::assertInstanceOf(DoctrineBoardRepository::class, $boards);
         $this->boards = $boards;
 
         $connection = $this->entityManager->getConnection();

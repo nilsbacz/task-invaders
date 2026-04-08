@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Board;
+use App\Board\Application\CreateBoard;
+use App\Board\Domain\Board;
 use App\Form\BoardType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -20,15 +21,16 @@ final readonly class BoardFormFactory
     ) {
     }
 
-    public function buildCreateForm(?Board $board = null): FormInterface
+    public function buildCreateForm(?CreateBoard $command = null): FormInterface
     {
-        $board ??= new Board();
+        $command ??= new CreateBoard();
         $options = [
-                    'action' => $this->urlGenerator->generate('board_create'),
-                    'method' => 'POST',
+                    'action'     => $this->urlGenerator->generate('board_create'),
+                    'method'     => 'POST',
+                    'data_class' => CreateBoard::class,
                    ];
 
-        return $this->formFactory->createNamed('board_create', BoardType::class, $board, $options);
+        return $this->formFactory->createNamed('board_create', BoardType::class, $command, $options);
     }
 
     public function buildUpdateForm(Board $board): FormInterface

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Board;
+use App\Board\Domain\Board;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class BoardUpdater

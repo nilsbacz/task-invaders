@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Repository;
+namespace App\Board\Infrastructure\Persistence;
 
-use App\Entity\BoardRow;
+use App\Board\Domain\BoardRow;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<BoardRow>
  */
-class BoardRowRepository extends ServiceEntityRepository
+class DoctrineBoardRowRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

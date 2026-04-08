@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Board;
-use App\Entity\BoardRow;
+use App\Board\Domain\Board;
+use App\Board\Domain\BoardRow;
 
 final readonly class BoardPresetApplier
 {

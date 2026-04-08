@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration;
 
+use App\Board\Application\BoardCreator;
+use App\Board\Domain\BoardRow;
 use App\Controller\BoardCreationController;
-use App\Service\BoardCreator;
 use App\Service\BoardDeleter;
 use App\Service\BoardPresetApplier;
 use App\Service\BoardPresetLoader;
@@ -59,7 +60,7 @@ final class BoardCreationControllerTest extends AbstractDatabaseWebTestCase
              'running',
             ],
             array_map(
-                static fn (\App\Entity\BoardRow $boardRow): string => $boardRow->getTitle(),
+                static fn (BoardRow $boardRow): string => $boardRow->getTitle(),
                 $board->getBoardRows()->toArray()
             )
         );

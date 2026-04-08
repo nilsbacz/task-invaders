@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\Board\Domain;
 
-use App\Repository\BoardRowRepository;
+use App\Board\Infrastructure\Persistence\DoctrineBoardRowRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: BoardRowRepository::class)]
+#[ORM\Entity(repositoryClass: DoctrineBoardRowRepository::class)]
 #[ORM\Table(name: 'board_row')]
 class BoardRow
 {

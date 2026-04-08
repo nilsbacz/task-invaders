@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Board\Application;
 
-use App\Entity\Board;
+use App\Board\Domain\Board;
+use App\Service\BoardPresetApplier;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class BoardCreator
@@ -15,9 +16,12 @@ final readonly class BoardCreator
     ) {
     }
 
-    public function create(Board $board): Board
+    public function create(CreateBoard $command): Board
     {
-        $board->setTitle(trim($board->getTitle()));
+        $board = new Board();
+        $board->setTitle(trim($command->getTitle()));
+        $board->setIsTurretMode($command->isTurretMode());
+
         if ($board->getBoardRows()->isEmpty()) {
             $this->boardPresetApplier->applyDefaultPreset($board);
         }

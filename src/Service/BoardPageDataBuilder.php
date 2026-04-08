@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Board;
-use App\Repository\BoardRepository;
+use App\Board\Application\CreateBoard;
+use App\Board\Domain\Board;
+use App\Board\Infrastructure\Persistence\DoctrineBoardRepository;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 
 final readonly class BoardPageDataBuilder
 {
     public function __construct(
-        private BoardRepository $boards,
+        private DoctrineBoardRepository $boards,
         private BoardFormFactory $boardFormFactory,
     ) {
     }
@@ -32,7 +33,7 @@ final readonly class BoardPageDataBuilder
     ): array {
         /** @var array<int, Board> $boards */
         $boards = $this->boards->findAll();
-        $createForm ??= $this->boardFormFactory->buildCreateForm();
+        $createForm ??= $this->boardFormFactory->buildCreateForm(new CreateBoard());
 
         $updateForms = $this->boardFormFactory->buildUpdateFormViews(
             $boards,

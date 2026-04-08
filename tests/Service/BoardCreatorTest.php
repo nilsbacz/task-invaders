@@ -6,9 +6,10 @@ namespace App\Tests\Service;
 
 use App\BoardPreset\BoardPreset;
 use App\BoardPreset\BoardRowPreset;
-use App\Entity\Board;
-use App\Entity\BoardRow;
-use App\Service\BoardCreator;
+use App\Board\Application\BoardCreator;
+use App\Board\Application\CreateBoard;
+use App\Board\Domain\Board;
+use App\Board\Domain\BoardRow;
 use App\Service\BoardPresetApplier;
 use App\Service\BoardPresetLoader;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,6 +23,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(BoardRow::class)]
 #[UsesClass(BoardPreset::class)]
 #[UsesClass(BoardRowPreset::class)]
+#[UsesClass(CreateBoard::class)]
 #[UsesClass(BoardPresetApplier::class)]
 #[UsesClass(BoardPresetLoader::class)]
 final class BoardCreatorTest extends TestCase
@@ -38,24 +40,30 @@ final class BoardCreatorTest extends TestCase
             new BoardPresetApplier($this->createPresetLoader()),
         );
 
-        $board = new Board();
-        $board->setTitle('  Alpha Board  ');
+        $command = new CreateBoard();
+        $command->setTitle('  Alpha Board  ');
+        $command->setIsTurretMode(true);
 
-        $result = $creator->create($board);
+        $result = $creator->create($command);
 
-        self::assertSame($board, $result);
-        self::assertSame('Alpha Board', $board->getTitle());
+        self::assertInstanceOf(Board::class, $result);
+        self::assertSame('Alpha Board', $result->getTitle());
+        self::assertTrue($result->isTurretMode());
         self::assertSame(
-            ['sports', 'household', 'running'],
+            [
+             'sports',
+             'household',
+             'running',
+            ],
             array_map(
                 static fn (BoardRow $boardRow): string => $boardRow->getTitle(),
-                $board->getBoardRows()->toArray()
+                $result->getBoardRows()->toArray()
             )
         );
     }
 
     #[Test]
-    public function itDoesNotApplyDefaultPresetWhenBoardAlreadyHasRows(): void
+    public function itBuildsBoardWithDefaultTurretModeWhenCommandDoesNotEnableIt(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects(self::once())->method('persist');
@@ -66,20 +74,14 @@ final class BoardCreatorTest extends TestCase
             new BoardPresetApplier($this->createPresetLoader()),
         );
 
-        $board = new Board();
-        $board->setTitle('  Custom Board  ');
-        $boardRow = new BoardRow();
-        $boardRow->setTitle('custom');
-        $boardRow->setRowNumber(99);
-        $board->addBoardRow($boardRow);
+        $command = new CreateBoard();
+        $command->setTitle('  Custom Board  ');
 
-        $creator->create($board);
+        $createdBoard = $creator->create($command);
 
-        self::assertSame('Custom Board', $board->getTitle());
-        self::assertCount(1, $board->getBoardRows());
-        $firstBoardRow = $board->getBoardRows()->first();
-        self::assertInstanceOf(BoardRow::class, $firstBoardRow);
-        self::assertSame('custom', $firstBoardRow->getTitle());
+        self::assertSame('Custom Board', $createdBoard->getTitle());
+        self::assertFalse($createdBoard->isTurretMode());
+        self::assertCount(3, $createdBoard->getBoardRows());
     }
 
     private function createPresetLoader(): BoardPresetLoader

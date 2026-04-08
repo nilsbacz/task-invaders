@@ -88,43 +88,43 @@ YAML);
     public static function invalidPresetProvider(): array
     {
         return [
-            'missing key' => [
-                <<<'YAML'
+                'missing key'               => [
+                                                <<<'YAML'
 name: Demo Preset
 version: 1
 boardRows: []
 YAML,
-                'Board preset "default" field "key" must be a non-empty string.',
-            ],
-            'invalid version' => [
-                <<<'YAML'
+                                                'Board preset "default" field "key" must be a non-empty string.',
+                                               ],
+                'invalid version'           => [
+                                                <<<'YAML'
 key: default
 name: Demo Preset
 version: wrong
 boardRows: []
 YAML,
-                'Board preset "default" field "version" must be an integer.',
-            ],
-            'missing boardRows' => [
-                <<<'YAML'
+                                                'Board preset "default" field "version" must be an integer.',
+                                               ],
+                'missing boardRows'         => [
+                                                <<<'YAML'
 key: default
 name: Demo Preset
 version: 1
 YAML,
-                'Board preset "default" must define a boardRows list.',
-            ],
-            'invalid boardRow entry' => [
-                <<<'YAML'
+                                                'Board preset "default" must define a boardRows list.',
+                                               ],
+                'invalid boardRow entry'    => [
+                                                <<<'YAML'
 key: default
 name: Demo Preset
 version: 1
 boardRows:
   - invalid
 YAML,
-                'Board preset "default" boardRow 0 is invalid.',
-            ],
-            'invalid boardRow title' => [
-                <<<'YAML'
+                                                'Board preset "default" boardRow 0 is invalid.',
+                                               ],
+                'invalid boardRow title'    => [
+                                                <<<'YAML'
 key: default
 name: Demo Preset
 version: 1
@@ -133,10 +133,10 @@ boardRows:
     title: ""
     position: 1
 YAML,
-                'Board preset "default" field "title" must be a non-empty string.',
-            ],
-            'invalid boardRow position' => [
-                <<<'YAML'
+                                                'Board preset "default" field "title" must be a non-empty string.',
+                                               ],
+                'invalid boardRow position' => [
+                                                <<<'YAML'
 key: default
 name: Demo Preset
 version: 1
@@ -145,9 +145,9 @@ boardRows:
     title: sports
     position: wrong
 YAML,
-                'Board preset "default" field "position" must be an integer.',
-            ],
-        ];
+                                                'Board preset "default" field "position" must be an integer.',
+                                               ],
+               ];
     }
 
     private function createPresetDirectory(string $contents): string

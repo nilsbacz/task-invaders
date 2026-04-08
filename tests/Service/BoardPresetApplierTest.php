@@ -6,8 +6,8 @@ namespace App\Tests\Service;
 
 use App\BoardPreset\BoardPreset;
 use App\BoardPreset\BoardRowPreset;
-use App\Entity\Board;
-use App\Entity\BoardRow;
+use App\Board\Domain\Board;
+use App\Board\Domain\BoardRow;
 use App\Service\BoardPresetApplier;
 use App\Service\BoardPresetLoader;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -32,14 +32,22 @@ final class BoardPresetApplierTest extends TestCase
         $applier->applyDefaultPreset($board);
 
         self::assertSame(
-            ['sports', 'household', 'running'],
+            [
+             'sports',
+             'household',
+             'running',
+            ],
             array_map(
                 static fn (BoardRow $boardRow): string => $boardRow->getTitle(),
                 $board->getBoardRows()->toArray()
             )
         );
         self::assertSame(
-            [1, 2, 3],
+            [
+             1,
+             2,
+             3,
+            ],
             array_map(
                 static fn (BoardRow $boardRow): int => $boardRow->getRowNumber(),
                 $board->getBoardRows()->toArray()
