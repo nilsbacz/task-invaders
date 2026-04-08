@@ -28,7 +28,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 #[CoversClass(BoardCreator::class)]
 #[CoversClass(BoardDeleter::class)]
 #[CoversClass(BoardUpdater::class)]
-final class BoardControllerTest extends WebTestCase
+final class BoardCreationControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
     private KernelInterface $kernelInstance;

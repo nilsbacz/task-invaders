@@ -124,6 +124,6 @@ final class BoardCreationController extends AbstractController
     ): Response {
         $parameters = $this->pageDataBuilder->buildIndexData($createForm, $errorUpdateForm, $errorBoardId);
 
-        return $this->render('board/index.html.twig', $parameters, new Response('', $statusCode));
+        return $this->render('boardcreation/index.html.twig', $parameters, new Response('', $statusCode));
     }
 }
