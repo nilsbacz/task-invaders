@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration;
 
-use App\Controller\BoardController;
+use App\Controller\BoardCreationController;
 use App\Entity\Board;
 use App\Repository\BoardRepository;
 use App\Service\BoardCreator;
@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-#[CoversClass(BoardController::class)]
+#[CoversClass(BoardCreationController::class)]
 #[CoversClass(BoardCreator::class)]
 #[CoversClass(BoardDeleter::class)]
 #[CoversClass(BoardUpdater::class)]

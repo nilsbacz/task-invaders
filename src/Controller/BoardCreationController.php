@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-final class BoardController extends AbstractController
+final class BoardCreationController extends AbstractController
 {
     public function __construct(
         private readonly BoardRepository $boards,
