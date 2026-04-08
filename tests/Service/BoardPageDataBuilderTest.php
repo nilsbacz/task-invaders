@@ -8,12 +8,14 @@ use App\Entity\Board;
 use App\Repository\BoardRepository;
 use App\Service\BoardFormFactory;
 use App\Service\BoardPageDataBuilder;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Forms;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 
+#[CoversClass(BoardPageDataBuilder::class)]
 final class BoardPageDataBuilderTest extends TestCase
 {
     #[Test]

@@ -68,20 +68,32 @@ docker compose up -d --build
 
 - **Tests**:  
   Run inside the root directory:
-  ```bash
+    ```bash
     docker compose exec php composer test
-  ```
+    ```
   With coverage:
-  ```bash
+    ```bash
     docker compose exec php composer test:cov
-  ```
+    ```
 
 - ** phpstan **
-  ```bash
-  vendor/bin/phpstan analyse
-  ```
+    ```bash
+    vendor/bin/phpstan analyse
+    ```
 
 - **Code Fixer**
-  ```bash
-  vendor/bin/phpcbf
-  ```
+    ```bash
+    vendor/bin/phpcbf
+    ```
+  
+- **Database access**
+    ```bash
+    docker compose exec mysql mysql -u root -proot
+    ```
+
+- **rerun migrations locally**
+    ```bash
+    docker compose exec php php bin/console doctrine:database:drop --force --if-exists
+    docker compose exec php php bin/console doctrine:database:create
+    docker compose exec php php bin/console doctrine:migrations:migrate --no-interaction 
+    ```

@@ -7,18 +7,23 @@ namespace App\Tests\Integration;
 use App\Controller\BoardCreationController;
 use App\Service\BoardCreator;
 use App\Service\BoardDeleter;
+use App\Service\BoardPresetApplier;
+use App\Service\BoardPresetLoader;
 use App\Service\BoardUpdater;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 #[CoversClass(BoardCreationController::class)]
-#[CoversClass(BoardCreator::class)]
-#[CoversClass(BoardDeleter::class)]
-#[CoversClass(BoardUpdater::class)]
+#[UsesClass(BoardCreator::class)]
+#[UsesClass(BoardDeleter::class)]
+#[UsesClass(BoardPresetApplier::class)]
+#[UsesClass(BoardPresetLoader::class)]
+#[UsesClass(BoardUpdater::class)]
 final class BoardCreationControllerTest extends AbstractDatabaseWebTestCase
 {
     #[Test]
@@ -47,6 +52,17 @@ final class BoardCreationControllerTest extends AbstractDatabaseWebTestCase
 
         self::assertNotNull($board);
         self::assertTrue($board->isTurretMode());
+        self::assertSame(
+            [
+             'sports',
+             'household',
+             'running',
+            ],
+            array_map(
+                static fn (\App\Entity\BoardRow $boardRow): string => $boardRow->getTitle(),
+                $board->getBoardRows()->toArray()
+            )
+        );
     }
 
     #[Test]

@@ -39,7 +39,7 @@ final class TaskTest extends TestCase
         $sprite = new Sprite();
 
         self::assertSame($task, $task->setTitle('Defend the base'));
-        self::assertSame($task, $task->setRowId(7));
+        self::assertSame($task, $task->setBoardRowId(7));
         self::assertSame($task, $task->setRiskLevel(2));
         self::assertSame($task, $task->setSpawnDate($spawnDate));
         self::assertSame($task, $task->setRespawnsIn(5));
@@ -52,7 +52,7 @@ final class TaskTest extends TestCase
         self::assertSame($task, $task->setSprite($sprite));
 
         self::assertSame('Defend the base', $task->getTitle());
-        self::assertSame(7, $task->getRowId());
+        self::assertSame(7, $task->getBoardRowId());
         self::assertSame(2, $task->getRiskLevel());
         self::assertSame($spawnDate, $task->getSpawnDate());
         self::assertSame(5, $task->getRespawnsIn());

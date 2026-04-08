@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Repository;
 
 use App\Repository\BoardRepository;
-use App\Repository\RowRepository;
+use App\Repository\BoardRowRepository;
 use App\Repository\SpriteRepository;
 use App\Repository\TaskDescriptionRepository;
 use App\Repository\TaskRepository;
@@ -17,7 +17,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(BoardRepository::class)]
-#[CoversClass(RowRepository::class)]
+#[CoversClass(BoardRowRepository::class)]
 #[CoversClass(SpriteRepository::class)]
 #[CoversClass(TaskDescriptionRepository::class)]
 #[CoversClass(TaskRepository::class)]
@@ -45,7 +45,7 @@ final class RepositorySmokeTest extends TestCase
     {
         return [
                 'board'            => [BoardRepository::class],
-                'row'              => [RowRepository::class],
+                'board_row'        => [BoardRowRepository::class],
                 'sprite'           => [SpriteRepository::class],
                 'task_description' => [TaskDescriptionRepository::class],
                 'task'             => [TaskRepository::class],

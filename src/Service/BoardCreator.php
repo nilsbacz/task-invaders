@@ -11,12 +11,17 @@ final readonly class BoardCreator
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private BoardPresetApplier $boardPresetApplier,
     ) {
     }
 
     public function create(Board $board): Board
     {
         $board->setTitle(trim($board->getTitle()));
+        if ($board->getBoardRows()->isEmpty()) {
+            $this->boardPresetApplier->applyDefaultPreset($board);
+        }
+
         $this->entityManager->persist($board);
         $this->entityManager->flush();
 

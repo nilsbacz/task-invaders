@@ -7,6 +7,7 @@ namespace App\Tests\Service;
 use App\Entity\Board;
 use App\Service\BoardFormFactory;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -15,6 +16,7 @@ use Symfony\Component\Form\Forms;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+#[CoversClass(BoardFormFactory::class)]
 final class BoardFormFactoryTest extends TestCase
 {
     private BoardFormFactory $factory;

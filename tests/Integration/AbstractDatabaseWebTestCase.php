@@ -107,7 +107,7 @@ abstract class AbstractDatabaseWebTestCase extends WebTestCase
         }
 
         $schemaTool = new SchemaTool($entityManager);
-        $schemaTool->dropSchema($metadata);
+        $schemaTool->dropDatabase();
         $schemaTool->createSchema($metadata);
     }
 

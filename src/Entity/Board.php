@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\BoardRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -25,6 +27,18 @@ class Board
     #[ORM\Column]
     #[Assert\NotNull]
     private bool $isTurretMode = false;
+
+    /**
+     * @var Collection<int, BoardRow>
+     */
+    #[ORM\OneToMany(mappedBy: 'board', targetEntity: BoardRow::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['rowNumber' => 'ASC'])]
+    private Collection $boardRows;
+
+    public function __construct()
+    {
+        $this->boardRows = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -51,6 +65,33 @@ class Board
     public function setIsTurretMode(bool $isTurretMode): static
     {
         $this->isTurretMode = $isTurretMode;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, BoardRow>
+     */
+    public function getBoardRows(): Collection
+    {
+        return $this->boardRows;
+    }
+
+    public function addBoardRow(BoardRow $boardRow): static
+    {
+        if (!$this->boardRows->contains($boardRow)) {
+            $this->boardRows->add($boardRow);
+            $boardRow->setBoard($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBoardRow(BoardRow $boardRow): static
+    {
+        if ($this->boardRows->removeElement($boardRow)) {
+            $boardRow->setBoard(null);
+        }
 
         return $this;
     }
