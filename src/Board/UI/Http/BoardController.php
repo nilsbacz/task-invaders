@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Board\UI\Http;
 
 use App\Board\Domain\Board;

@@ -31,7 +31,15 @@ class Board
     /**
      * @var Collection<int, BoardRow>
      */
-    #[ORM\OneToMany(mappedBy: 'board', targetEntity: BoardRow::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(
+        mappedBy: 'board',
+        targetEntity: BoardRow::class,
+        cascade: [
+                  'persist',
+                  'remove',
+                 ],
+        orphanRemoval: true
+    )]
     #[ORM\OrderBy(['rowNumber' => 'ASC'])]
     private Collection $boardRows;
 

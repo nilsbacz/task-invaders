@@ -72,7 +72,11 @@ final readonly class BoardPresetLoader
     {
         $value = $data[$field] ?? null;
         if (!is_string($value) || $value === '') {
-            throw new \RuntimeException(sprintf('Board preset "%s" field "%s" must be a non-empty string.', $presetKey, $field));
+            throw new \RuntimeException(sprintf(
+                'Board preset "%s" field "%s" must be a non-empty string.',
+                $presetKey,
+                $field
+            ));
         }
 
         return $value;
@@ -85,7 +89,11 @@ final readonly class BoardPresetLoader
     {
         $value = $data[$field] ?? null;
         if (!is_int($value)) {
-            throw new \RuntimeException(sprintf('Board preset "%s" field "%s" must be an integer.', $presetKey, $field));
+            throw new \RuntimeException(sprintf(
+                'Board preset "%s" field "%s" must be an integer.',
+                $presetKey,
+                $field
+            ));
         }
 
         return $value;

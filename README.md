@@ -76,14 +76,17 @@ docker compose up -d --build
     docker compose exec php composer test:cov
     ```
 
-- ** phpstan **
+- **Code Analysis**
     ```bash
-    vendor/bin/phpstan analyse
+    docker compose exec php vendor/bin/phpstan analyse
     ```
 
-- **Code Fixer**
     ```bash
-    vendor/bin/phpcbf
+    docker compose exec php vendor/bin/phpcbf
+    ```
+  
+    ```bash
+    docker compose exec php vendor/bin/phpcs
     ```
   
 - **Database access**
