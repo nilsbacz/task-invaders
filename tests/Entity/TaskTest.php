@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Entity;
 
+use App\Enum\TaskRiskLevel;
 use App\Entity\Sprite;
 use App\Entity\Task;
 use App\Entity\TaskDescription;
@@ -40,7 +41,7 @@ final class TaskTest extends TestCase
 
         self::assertSame($task, $task->setTitle('Defend the base'));
         self::assertSame($task, $task->setBoardRowId(7));
-        self::assertSame($task, $task->setRiskLevel(2));
+        self::assertSame($task, $task->setRiskLevel(TaskRiskLevel::YELLOW));
         self::assertSame($task, $task->setSpawnDate($spawnDate));
         self::assertSame($task, $task->setRespawnsIn(5));
         self::assertSame($task, $task->setSpawnsEvery(10));
@@ -53,7 +54,7 @@ final class TaskTest extends TestCase
 
         self::assertSame('Defend the base', $task->getTitle());
         self::assertSame(7, $task->getBoardRowId());
-        self::assertSame(2, $task->getRiskLevel());
+        self::assertSame(TaskRiskLevel::YELLOW, $task->getRiskLevel());
         self::assertSame($spawnDate, $task->getSpawnDate());
         self::assertSame(5, $task->getRespawnsIn());
         self::assertSame(10, $task->getSpawnsEvery());

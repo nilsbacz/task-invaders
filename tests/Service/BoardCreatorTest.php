@@ -53,7 +53,7 @@ final class BoardCreatorTest extends TestCase
             [
              'sports',
              'household',
-             'running',
+             'projects',
             ],
             array_map(
                 static fn (BoardRow $boardRow): string => $boardRow->getTitle(),
@@ -99,8 +99,8 @@ boardRows:
   - key: household
     title: household
     position: 2
-  - key: running
-    title: running
+  - key: projects
+    title: projects
     position: 3
 YAML;
         self::assertSame(strlen($contents), file_put_contents($directory . '/default.yaml', $contents));

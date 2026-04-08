@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\TaskRiskLevel;
 use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -23,8 +24,13 @@ class Task
     #[ORM\Column(name: 'board_row_id')]
     private int $boardRowId;
 
-    #[ORM\Column(type: Types::SMALLINT)]
-    private int $riskLevel;
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 6,
+        enumType: TaskRiskLevel::class,
+        columnDefinition: "ENUM('GREEN', 'YELLOW', 'RED') NOT NULL"
+    )]
+    private TaskRiskLevel $riskLevel;
 
     #[ORM\Column]
     private \DateTimeImmutable $spawnDate;
@@ -82,12 +88,12 @@ class Task
         return $this;
     }
 
-    public function getRiskLevel(): int
+    public function getRiskLevel(): TaskRiskLevel
     {
         return $this->riskLevel;
     }
 
-    public function setRiskLevel(int $riskLevel): static
+    public function setRiskLevel(TaskRiskLevel $riskLevel): static
     {
         $this->riskLevel = $riskLevel;
 

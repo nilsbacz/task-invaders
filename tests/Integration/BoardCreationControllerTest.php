@@ -57,7 +57,7 @@ final class BoardCreationControllerTest extends AbstractDatabaseWebTestCase
             [
              'sports',
              'household',
-             'running',
+             'projects',
             ],
             array_map(
                 static fn (BoardRow $boardRow): string => $boardRow->getTitle(),

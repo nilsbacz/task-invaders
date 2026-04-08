@@ -52,7 +52,7 @@ CREATE TABLE task (
     id INT AUTO_INCREMENT NOT NULL,
     title VARCHAR(32) NOT NULL,
     board_row_id INT NOT NULL,
-    risk_level SMALLINT NOT NULL,
+    risk_level ENUM('GREEN', 'YELLOW', 'RED') NOT NULL,
     spawn_date DATETIME NOT NULL,
     respawns_in INT DEFAULT 0 NOT NULL,
     spawns_every INT DEFAULT 0 NOT NULL,

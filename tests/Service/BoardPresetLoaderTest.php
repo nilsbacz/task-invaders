@@ -28,8 +28,8 @@ boardRows:
   - key: sports
     title: sports
     position: 1
-  - key: running
-    title: running
+  - key: projects
+    title: projects
     position: 2
 YAML);
 
