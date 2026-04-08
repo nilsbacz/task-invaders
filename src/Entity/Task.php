@@ -20,8 +20,8 @@ class Task
     #[ORM\Column(length: 32)]
     private string $title;
 
-    #[ORM\Column]
-    private int $rowId;
+    #[ORM\Column(name: 'board_row_id')]
+    private int $boardRowId;
 
     #[ORM\Column(type: Types::SMALLINT)]
     private int $riskLevel;
@@ -70,14 +70,14 @@ class Task
         return $this;
     }
 
-    public function getRowId(): int
+    public function getBoardRowId(): int
     {
-        return $this->rowId;
+        return $this->boardRowId;
     }
 
-    public function setRowId(int $rowId): static
+    public function setBoardRowId(int $boardRowId): static
     {
-        $this->rowId = $rowId;
+        $this->boardRowId = $boardRowId;
 
         return $this;
     }

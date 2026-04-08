@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
-use App\Entity\Board;
-use App\Repository\BoardRepository;
+use App\Board\Application\CreateBoard;
+use App\Board\Domain\Board;
+use App\Board\Infrastructure\Persistence\DoctrineBoardRepository;
 use App\Service\BoardFormFactory;
 use App\Service\BoardPageDataBuilder;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Forms;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 
+#[CoversClass(BoardPageDataBuilder::class)]
 final class BoardPageDataBuilderTest extends TestCase
 {
     #[Test]
@@ -23,7 +26,7 @@ final class BoardPageDataBuilderTest extends TestCase
                    $this->createBoardWithId(1),
                    $this->createBoardWithId(2),
                   ];
-        $repository = $this->createMock(BoardRepository::class);
+        $repository = $this->createMock(DoctrineBoardRepository::class);
         $repository->expects(self::once())->method('findAll')->willReturn($boards);
 
         $builder = new BoardPageDataBuilder($repository, $this->createBoardFormFactory());
@@ -45,11 +48,11 @@ final class BoardPageDataBuilderTest extends TestCase
                    $this->createBoardWithId(1),
                    $this->createBoardWithId(2),
                   ];
-        $repository = $this->createMock(BoardRepository::class);
+        $repository = $this->createMock(DoctrineBoardRepository::class);
         $repository->expects(self::once())->method('findAll')->willReturn($boards);
 
         $formFactory = Forms::createFormFactoryBuilder()->getFormFactory();
-        $customCreateForm = $formFactory->createNamed('custom_create');
+        $customCreateForm = $formFactory->createNamed('custom_create', data: new CreateBoard());
         $errorUpdateForm = $formFactory->createNamed('board_error_2');
 
         $builder = new BoardPageDataBuilder($repository, $this->createBoardFormFactory());

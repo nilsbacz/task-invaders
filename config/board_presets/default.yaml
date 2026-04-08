@@ -1,0 +1,13 @@
+key: default
+name: Default Board
+version: 1
+boardRows:
+  - key: sports
+    title: sports
+    position: 1
+  - key: household
+    title: household
+    position: 2
+  - key: running
+    title: running
+    position: 3

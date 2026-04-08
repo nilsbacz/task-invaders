@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Board;
-use App\Repository\BoardRepository;
-use App\Service\BoardCreator;
+use App\Board\Application\BoardCreator;
+use App\Board\Application\CreateBoard;
+use App\Board\Infrastructure\Persistence\DoctrineBoardRepository;
 use App\Service\BoardDeleter;
 use App\Service\BoardFormFactory;
 use App\Service\BoardPageDataBuilder;
@@ -17,10 +17,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-final class BoardController extends AbstractController
+final class BoardCreationController extends AbstractController
 {
     public function __construct(
-        private readonly BoardRepository $boards,
+        private readonly DoctrineBoardRepository $boards,
         private readonly BoardCreator $boardCreator,
         private readonly BoardDeleter $boardDeleter,
         private readonly BoardUpdater $boardUpdater,
@@ -38,15 +38,17 @@ final class BoardController extends AbstractController
     #[Route('/boards', name: 'board_create', methods: ['POST'])]
     public function create(Request $request): Response
     {
-        $board = new Board();
-        $form = $this->boardFormFactory->buildCreateForm($board);
+        $command = new CreateBoard();
+        $form = $this->boardFormFactory->buildCreateForm($command);
         $form->handleRequest($request);
 
         $formSubmitted = $form->isSubmitted();
         $formValid = $formSubmitted && $form->isValid();
 
         if ($formValid) {
-            $this->boardCreator->create($board);
+            $submittedCommand = $form->getData();
+            \assert($submittedCommand instanceof CreateBoard);
+            $this->boardCreator->create($submittedCommand);
             $this->addFlash('success', 'Board created.');
 
             return $this->redirectToRoute('board_index');
@@ -124,6 +126,6 @@ final class BoardController extends AbstractController
     ): Response {
         $parameters = $this->pageDataBuilder->buildIndexData($createForm, $errorUpdateForm, $errorBoardId);
 
-        return $this->render('board/index.html.twig', $parameters, new Response('', $statusCode));
+        return $this->render('boards/index.html.twig', $parameters, new Response('', $statusCode));
     }
 }

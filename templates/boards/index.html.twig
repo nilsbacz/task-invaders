@@ -33,7 +33,7 @@
                     {% set updateForm = updateForms[board.id] %}
                     {% set deleteForm = deleteForms[board.id] %}
                     <article>
-                        <h3>Board {{ board.id }}</h3>
+                        <h3><a href="{{ path('board_show', { id: board.id }) }}">Board {{ board.id }}</a></h3>
                         {{ form_start(updateForm) }}
                         {{ form_row(updateForm.title) }}
                         {{ form_row(updateForm.isTurretMode) }}

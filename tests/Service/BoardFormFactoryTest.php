@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
-use App\Entity\Board;
+use App\Board\Application\CreateBoard;
+use App\Board\Domain\Board;
 use App\Service\BoardFormFactory;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -15,6 +17,7 @@ use Symfony\Component\Form\Forms;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+#[CoversClass(BoardFormFactory::class)]
 final class BoardFormFactoryTest extends TestCase
 {
     private BoardFormFactory $factory;
@@ -85,6 +88,7 @@ final class BoardFormFactoryTest extends TestCase
         self::assertSame('board_create', $form->getName());
         self::assertSame('/boards', $form->getConfig()->getOption('action'));
         self::assertSame('POST', $form->getConfig()->getOption('method'));
+        self::assertSame(CreateBoard::class, $form->getConfig()->getOption('data_class'));
         self::assertTrue($form->has('title'));
         self::assertTrue($form->has('isTurretMode'));
     }

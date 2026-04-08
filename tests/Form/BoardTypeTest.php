@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Form;
 
-use App\Entity\Board;
+use App\Board\Application\CreateBoard;
+use App\Board\Domain\Board;
 use App\Form\BoardType;
 use Override;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -56,6 +57,24 @@ final class BoardTypeTest extends TypeTestCase
         $data = $form->getData();
         self::assertInstanceOf(Board::class, $data);
         self::assertSame('Form Board', $data->getTitle());
+        self::assertTrue($data->isTurretMode());
+    }
+
+    #[Test]
+    public function itCanBindToCreateBoardCommand(): void
+    {
+        $form = $this->factory->create(BoardType::class, new CreateBoard(), ['data_class' => CreateBoard::class]);
+
+        $form->submit([
+                       'title'        => 'Command Board',
+                       'isTurretMode' => true,
+                      ]);
+
+        self::assertTrue($form->isSynchronized());
+
+        $data = $form->getData();
+        self::assertInstanceOf(CreateBoard::class, $data);
+        self::assertSame('Command Board', $data->getTitle());
         self::assertTrue($data->isTurretMode());
     }
 

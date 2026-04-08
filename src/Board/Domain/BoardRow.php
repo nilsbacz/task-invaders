@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\Board\Domain;
 
-use App\Repository\RowRepository;
+use App\Board\Infrastructure\Persistence\DoctrineBoardRowRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: RowRepository::class)]
-class Row
+#[ORM\Entity(repositoryClass: DoctrineBoardRowRepository::class)]
+#[ORM\Table(name: 'board_row')]
+class BoardRow
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -19,8 +20,12 @@ class Row
     #[ORM\Column(length: 32)]
     private string $title;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'sort_order')]
     private int $rowNumber;
+
+    #[ORM\ManyToOne(inversedBy: 'boardRows')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Board $board = null;
 
     public function getId(): ?int
     {
@@ -47,6 +52,18 @@ class Row
     public function setRowNumber(int $rowNumber): static
     {
         $this->rowNumber = $rowNumber;
+
+        return $this;
+    }
+
+    public function getBoard(): ?Board
+    {
+        return $this->board;
+    }
+
+    public function setBoard(?Board $board): static
+    {
+        $this->board = $board;
 
         return $this;
     }

@@ -14,7 +14,7 @@ final class Version20260216214814 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Initial schema for board, row, sprite, task, and task_description.';
+        return 'Initial schema for board, board_row, sprite, task, and task_description.';
     }
 
     public function up(Schema $schema): void // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
@@ -29,10 +29,12 @@ CREATE TABLE board (
 ) DEFAULT CHARACTER SET utf8mb4
 SQL);
         $this->addSql(<<<'SQL'
-CREATE TABLE `row` (
+CREATE TABLE board_row (
     id INT AUTO_INCREMENT NOT NULL,
     title VARCHAR(32) NOT NULL,
-    `row_number` INT NOT NULL,
+    sort_order INT NOT NULL,
+    board_id INT NOT NULL,
+    INDEX IDX_4A717A57E7A1254A (board_id),
     PRIMARY KEY (id)
 ) DEFAULT CHARACTER SET utf8mb4
 SQL);
@@ -49,7 +51,7 @@ SQL);
 CREATE TABLE task (
     id INT AUTO_INCREMENT NOT NULL,
     title VARCHAR(32) NOT NULL,
-    row_id INT NOT NULL,
+    board_row_id INT NOT NULL,
     risk_level SMALLINT NOT NULL,
     spawn_date DATETIME NOT NULL,
     respawns_in INT DEFAULT 0 NOT NULL,
@@ -73,6 +75,10 @@ CREATE TABLE task_description (
 ) DEFAULT CHARACTER SET utf8mb4
 SQL);
         $this->addSql(<<<'SQL'
+ALTER TABLE board_row
+    ADD CONSTRAINT FK_4A717A57E7A1254A FOREIGN KEY (board_id) REFERENCES board (id)
+SQL);
+        $this->addSql(<<<'SQL'
 ALTER TABLE task
     ADD CONSTRAINT FK_527EDB2511B6E0C4 FOREIGN KEY (task_description_id) REFERENCES task_description (id)
 SQL);
@@ -86,16 +92,19 @@ SQL);
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
+ALTER TABLE board_row DROP FOREIGN KEY FK_4A717A57E7A1254A
+SQL);
+        $this->addSql(<<<'SQL'
 ALTER TABLE task DROP FOREIGN KEY FK_527EDB2511B6E0C4
 SQL);
         $this->addSql(<<<'SQL'
 ALTER TABLE task DROP FOREIGN KEY FK_527EDB254ED1B8A2
 SQL);
         $this->addSql(<<<'SQL'
-DROP TABLE board
+DROP TABLE board_row
 SQL);
         $this->addSql(<<<'SQL'
-DROP TABLE `row`
+DROP TABLE board
 SQL);
         $this->addSql(<<<'SQL'
 DROP TABLE sprite
