@@ -5,107 +5,22 @@ declare(strict_types=1);
 namespace App\Tests\Integration;
 
 use App\Controller\BoardCreationController;
-use App\Entity\Board;
-use App\Repository\BoardRepository;
 use App\Service\BoardCreator;
 use App\Service\BoardDeleter;
 use App\Service\BoardUpdater;
-use Doctrine\DBAL\Connection;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 #[CoversClass(BoardCreationController::class)]
 #[CoversClass(BoardCreator::class)]
 #[CoversClass(BoardDeleter::class)]
 #[CoversClass(BoardUpdater::class)]
-final class BoardCreationControllerTest extends WebTestCase
+final class BoardCreationControllerTest extends AbstractDatabaseWebTestCase
 {
-    private KernelBrowser $client;
-    private KernelInterface $kernelInstance;
-    private EntityManagerInterface $entityManager;
-    private BoardRepository $boards;
-
-    #[\Override]
-    public static function setUpBeforeClass(): void
-    {
-        $options = [
-                    'environment' => 'test',
-                    'debug'       => true,
-                   ];
-
-        $kernel = self::createKernel($options);
-        $kernel->boot();
-        $container = $kernel->getContainer();
-        /** @var ManagerRegistry $registry */
-        $registry = $container->get('doctrine');
-        $entityManager = $registry->getManager();
-        self::assertInstanceOf(EntityManagerInterface::class, $entityManager);
-        $connection = $entityManager->getConnection();
-
-        self::waitForDatabase($connection);
-        self::resetSchema($entityManager);
-
-        $entityManager->close();
-        $kernel->shutdown();
-    }
-
-    #[\Override]
-    protected function setUp(): void
-    {
-        $options = [
-                    'environment' => 'test',
-                    'debug'       => true,
-                   ];
-        $this->kernelInstance = self::createKernel($options);
-        $this->kernelInstance->boot();
-        $this->client = new KernelBrowser($this->kernelInstance);
-        self::getClient($this->client);
-        $this->client->disableReboot();
-        $this->client->catchExceptions(true);
-
-        $container = $this->kernelInstance->getContainer();
-        /** @var ManagerRegistry $registry */
-        $registry = $container->get('doctrine');
-        $entityManager = $registry->getManager();
-        self::assertInstanceOf(EntityManagerInterface::class, $entityManager);
-        $this->entityManager = $entityManager;
-        $boards = $entityManager->getRepository(Board::class);
-        self::assertInstanceOf(BoardRepository::class, $boards);
-        $this->boards = $boards;
-
-        $connection = $this->entityManager->getConnection();
-        if (!$connection->isTransactionActive()) {
-            $connection->beginTransaction();
-        }
-    }
-
-    #[\Override]
-    protected function tearDown(): void
-    {
-        $connection = $this->entityManager->getConnection();
-        if ($connection->isTransactionActive()) {
-            $connection->rollBack();
-        }
-
-        $this->entityManager->clear();
-        $this->entityManager->close();
-        $this->kernelInstance->shutdown();
-
-        unset($this->client, $this->kernelInstance, $this->entityManager, $this->boards);
-
-        parent::tearDown();
-    }
-
     #[Test]
     public function itCreatesBoardFromForm(): void
     {
@@ -273,51 +188,5 @@ final class BoardCreationControllerTest extends WebTestCase
                 'create' => ['create'],
                 'update' => ['update'],
                ];
-    }
-
-    private static function resetSchema(EntityManagerInterface $entityManager): void
-    {
-        $metadata = $entityManager->getMetadataFactory()->getAllMetadata();
-        if ($metadata === []) {
-            return;
-        }
-
-        $schemaTool = new SchemaTool($entityManager);
-        $schemaTool->dropSchema($metadata);
-        $schemaTool->createSchema($metadata);
-    }
-
-    private function createBoard(string $title, bool $isTurretMode): Board
-    {
-        $board = new Board();
-        $board->setTitle($title);
-        $board->setIsTurretMode($isTurretMode);
-
-        $this->entityManager->persist($board);
-        $this->entityManager->flush();
-
-        return $board;
-    }
-
-    private static function waitForDatabase(Connection $connection): void
-    {
-        $attempts = 0;
-        $maxAttempts = 25;
-        $sleepUs = 200_000;
-
-        while (true) {
-            try {
-                $connection->executeQuery('SELECT 1')->fetchOne();
-                return;
-            } catch (\Throwable $exception) {
-                $attempts++;
-                if ($attempts >= $maxAttempts) {
-                    throw $exception;
-                }
-
-                $connection->close();
-                usleep($sleepUs);
-            }
-        }
     }
 }
