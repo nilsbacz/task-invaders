@@ -1,33 +1,47 @@
-<!DOCTYPE html>
+{% extends 'base.html.twig' %}
 
-<title>{{ board.title }}</title>
+{% block title %}{{ board.title }}{% endblock %}
 
 {% block body %}
-    <main>
-        <h1>{{ board.title }}</h1>
+    <section class="hero-panel mb-4">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+            <div>
+                <p class="eyebrow mb-2">Board detail</p>
+                <h1 class="display-5 mb-2">{{ board.title }}</h1>
+                <p class="lead mb-0">{{ board.isTurretMode ? 'Turret mode enabled.' : 'Standard board mode.' }}</p>
+            </div>
+            <a class="btn btn-outline-dark" href="{{ path('board_index') }}">Back to boards</a>
+        </div>
+    </section>
 
-        <h2>Rows</h2>
+    <section class="section-heading mb-4">
+        <p class="eyebrow">Rows</p>
+        <h2 class="h3 mb-0">Board structure</h2>
+    </section>
 
-        {% if board.boardRows is empty %}
-            <p>No rows yet.</p>
-        {% else %}
-            <ul>
-                {% for row in board.boardRows %}
-                    <li>
-                        {{ row.title }}
+    {% if board.boardRows is empty %}
+        <div class="panel p-4">
+            <p class="mb-0">No rows yet.</p>
+        </div>
+    {% else %}
+        <div class="row g-4">
+            {% for row in board.boardRows %}
+                <div class="col-lg-6 col-xl-4">
+                    <article class="panel h-100 p-4">
+                        <h3 class="h4 mb-3">{{ row.title }}</h3>
 
                         {% if row.tasks is empty %}
-                            <p>No tasks yet.</p>
+                            <p class="text-body-secondary mb-0">No tasks yet.</p>
                         {% else %}
-                            <ul>
+                            <ul class="list-group list-group-flush">
                                 {% for task in row.tasks %}
-                                    <li>{{ task.title }}</li>
+                                    <li class="list-group-item">{{ task.title }}</li>
                                 {% endfor %}
                             </ul>
                         {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    </main>
+                    </article>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endblock %}

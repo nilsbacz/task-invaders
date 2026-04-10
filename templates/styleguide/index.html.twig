@@ -1,0 +1,333 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Style Guide{% endblock %}
+
+{% block body %}
+    <section class="hero-panel mb-4 mb-lg-5">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-7">
+                <p class="eyebrow mb-3">Theme Workspace</p>
+                <h1 class="display-4 mb-3">Style guide for the Task Invaders theme.</h1>
+                <p class="lead mb-4">
+                    This page is your live reference for Bootstrap components, your chosen palette, and the custom
+                    layer that turns generic Bootstrap into the app's own visual language.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a class="btn btn-primary btn-lg" href="{{ path('board_index') }}">Open boards</a>
+                    <a class="btn btn-outline-dark btn-lg" href="#buttons">Jump to buttons</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="styleguide-section" id="palette">
+        <div class="section-heading">
+            <p class="eyebrow">Palette</p>
+            <h2>Theme tokens</h2>
+        </div>
+        <div class="row g-3">
+            <div class="col-6 col-md-4 col-xl-2">
+                <article class="swatch-card">
+                    <div class="swatch" style="--swatch-color: #ded84a;"></div>
+                    <h3>Primary</h3>
+                    <p>#DED84A</p>
+                </article>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <article class="swatch-card">
+                    <div class="swatch" style="--swatch-color: #41ff78;"></div>
+                    <h3>Accent</h3>
+                    <p>#41FF78</p>
+                </article>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <article class="swatch-card">
+                    <div class="swatch" style="--swatch-color: #ff3b30;"></div>
+                    <h3>Warning</h3>
+                    <p>#FF3B30</p>
+                </article>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <article class="swatch-card">
+                    <div class="swatch" style="--swatch-color: #0c100c;"></div>
+                    <h3>Panel</h3>
+                    <p>#0C100C</p>
+                </article>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <article class="swatch-card">
+                    <div class="swatch" style="--swatch-color: #020503;"></div>
+                    <h3>Page</h3>
+                    <p>#020503</p>
+                </article>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <article class="swatch-card">
+                    <div class="swatch" style="--swatch-color: #b7c38b;"></div>
+                    <h3>Ink</h3>
+                    <p>#B7C38B</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="styleguide-section" id="typography">
+        <div class="section-heading">
+            <p class="eyebrow">Typography</p>
+            <h2>Heading and copy rhythm</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="panel p-4 p-lg-5">
+                    <p class="eyebrow mb-2">Display sample</p>
+                    <h1 class="display-3">Task Invaders</h1>
+                    <h2 class="h2 mt-4">Secondary heading for page sections</h2>
+                    <p class="lead mt-3">
+                        Use the lead style for short introductions, summaries, and dashboard headers.
+                    </p>
+                    <p class="mb-0">
+                        Standard body copy should stay compact, calm, and readable. Reserve stronger color and weight
+                        for calls to action and section labels.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="panel p-4">
+                    <p class="eyebrow mb-3">Scale</p>
+                    <div class="vstack gap-2">
+                        <div class="fs-1 fw-semibold">Display</div>
+                        <div class="fs-3 fw-semibold">Section heading</div>
+                        <div class="fs-5 fw-semibold">Card heading</div>
+                        <div class="fs-6 text-uppercase letterspace">Eyebrow label</div>
+                        <div>Body copy</div>
+                        <div class="small text-body-secondary">Support text and helper copy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="styleguide-section" id="buttons">
+        <div class="section-heading">
+            <p class="eyebrow">Buttons</p>
+            <h2>Primary actions and alternates</h2>
+        </div>
+        <div class="panel p-4">
+            <div class="d-flex flex-wrap gap-3 mb-4">
+                <button class="btn btn-primary">Primary action</button>
+                <button class="btn btn-secondary">Secondary action</button>
+                <button class="btn btn-outline-dark">Outline action</button>
+                <button class="btn btn-light">Light action</button>
+                <button class="btn btn-accent">Accent action</button>
+                <button class="btn btn-link">Text action</button>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <button class="btn btn-primary btn-lg">Large button</button>
+                <button class="btn btn-primary">Default button</button>
+                <button class="btn btn-primary btn-sm">Small button</button>
+                <button class="btn btn-outline-dark" disabled>Disabled</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="styleguide-section" id="feedback">
+        <div class="section-heading">
+            <p class="eyebrow">Feedback</p>
+            <h2>Alerts, badges and status markers</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="panel p-4">
+                    <div class="alert alert-primary" role="alert">
+                        Primary alert for general guidance or progress updates.
+                    </div>
+                    <div class="alert alert-success" role="alert">
+                        Success alert when an action completes correctly.
+                    </div>
+                    <div class="alert alert-warning mb-0" role="alert">
+                        Warning alert for state that needs attention without blocking the user.
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="panel p-4">
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        <span class="badge text-bg-primary">Primary</span>
+                        <span class="badge text-bg-secondary">Secondary</span>
+                        <span class="badge text-bg-success">Stable</span>
+                        <span class="badge text-bg-warning">Pending</span>
+                        <span class="badge text-bg-danger">Blocked</span>
+                    </div>
+                    <div class="progress" role="progressbar" aria-label="Example progress" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 62%">62%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="styleguide-section" id="cards">
+        <div class="section-heading">
+            <p class="eyebrow">Cards</p>
+            <h2>Content modules and imagery</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <article class="card shadow-soft h-100">
+                    <div class="ratio ratio-4x3 card-image-shell">
+                        <svg class="sample-art" viewBox="0 0 400 300" aria-hidden="true">
+                            <rect width="400" height="300" fill="#050505"></rect>
+                            <circle cx="105" cy="95" r="48" fill="#ffff00"></circle>
+                            <path d="M0 240 C70 180, 130 225, 200 190 S330 120, 400 182 V300 H0 Z" fill="#41ff78"></path>
+                            <path d="M0 268 C85 210, 145 252, 240 214 S350 190, 400 228 V300 H0 Z" fill="#ff3b30"></path>
+                        </svg>
+                    </div>
+                    <div class="card-body">
+                        <p class="eyebrow mb-2">Feature card</p>
+                        <h3 class="card-title h4">Board overview</h3>
+                        <p class="card-text">
+                            Use cards for grouped content, summaries, and next-step navigation.
+                        </p>
+                    </div>
+                </article>
+            </div>
+            <div class="col-lg-4">
+                <article class="card shadow-soft h-100">
+                    <div class="card-body">
+                        <p class="eyebrow mb-2">Compact module</p>
+                        <h3 class="card-title h4">Checklist</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Keep heading and action close together.</li>
+                            <li class="list-group-item">Use one accent color per component.</li>
+                            <li class="list-group-item">Avoid stacking too many borders.</li>
+                        </ul>
+                    </div>
+                </article>
+            </div>
+            <div class="col-lg-4">
+                <article class="panel h-100 p-4">
+                    <p class="eyebrow mb-2">Media treatment</p>
+                    <div class="ratio ratio-1x1 frame mb-3">
+                        <svg class="sample-art sample-art--portrait" viewBox="0 0 320 320" aria-hidden="true">
+                            <rect width="320" height="320" fill="#050505"></rect>
+                            <rect x="46" y="46" width="228" height="228" fill="#111111"></rect>
+                            <circle cx="160" cy="160" r="62" fill="#41ff78"></circle>
+                            <circle cx="160" cy="160" r="30" fill="#ffff00"></circle>
+                        </svg>
+                    </div>
+                    <p class="mb-0 text-body-secondary">
+                        Keep the imagery sharp and high-contrast: dark fields, bright pixel colors, and hard edges.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="styleguide-section" id="forms">
+        <div class="section-heading">
+            <p class="eyebrow">Forms</p>
+            <h2>Inputs, labels and validation states</h2>
+        </div>
+        <div class="panel p-4 p-lg-5">
+            <form class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label" for="styleguideTitle">Board title</label>
+                    <input id="styleguideTitle" class="form-control" type="text" value="Release planning board">
+                    <div class="form-text">Use sentence case and keep labels direct.</div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="styleguideSelect">Preset</label>
+                    <select id="styleguideSelect" class="form-select">
+                        <option selected>Default preset</option>
+                        <option>Operations</option>
+                        <option>Experiment</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="styleguideTextarea">Description</label>
+                    <textarea id="styleguideTextarea" class="form-control" rows="4">Keep helper text short and validation messages specific.</textarea>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="styleguideValid">Valid state</label>
+                    <input id="styleguideValid" class="form-control is-valid" type="text" value="Ready to publish">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="styleguideInvalid">Invalid state</label>
+                    <input id="styleguideInvalid" class="form-control is-invalid" type="text" value="x">
+                    <div class="invalid-feedback">Title must be at least 3 characters.</div>
+                </div>
+                <div class="col-12">
+                    <div class="form-check">
+                        <input id="styleguideCheckbox" class="form-check-input" type="checkbox" checked>
+                        <label class="form-check-label" for="styleguideCheckbox">
+                            Enable turret mode
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="styleguide-section" id="data">
+        <div class="section-heading">
+            <p class="eyebrow">Data display</p>
+            <h2>Tables and grouped lists</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="panel p-3 p-lg-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Board</th>
+                                    <th scope="col">Owner</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Tasks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Roadmap</td>
+                                    <td>Nils</td>
+                                    <td><span class="badge text-bg-success">Healthy</span></td>
+                                    <td>24</td>
+                                </tr>
+                                <tr>
+                                    <td>Operations</td>
+                                    <td>Team</td>
+                                    <td><span class="badge text-bg-warning">Review</span></td>
+                                    <td>8</td>
+                                </tr>
+                                <tr>
+                                    <td>Archive</td>
+                                    <td>System</td>
+                                    <td><span class="badge text-bg-secondary">Read only</span></td>
+                                    <td>112</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="panel p-4">
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Backlog
+                            <span class="badge text-bg-primary rounded-pill">12</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            In progress
+                            <span class="badge text-bg-warning rounded-pill">5</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Done
+                            <span class="badge text-bg-success rounded-pill">19</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
