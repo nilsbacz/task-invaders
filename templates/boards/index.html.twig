@@ -3,14 +3,14 @@
 {% block title %}Boards{% endblock %}
 
 {% block body %}
-    <section class="hero-panel mb-4">
-        <div class="d-flex flex-column flex-lg-row align-items-lg-end justify-content-between gap-3">
+    <section class="hero-panel hero-panel--compact mb-3">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-end justify-content-between gap-2">
             <div>
-                <p class="eyebrow mb-2">Boards</p>
-                <h1 class="display-5 mb-2">Manage your task boards.</h1>
-                <p class="lead mb-0">Create, edit, and inspect boards while you refine the app's theme.</p>
+                <p class="eyebrow mb-1">Boards</p>
+                <h1 class="h3 mb-1">Manage your task boards.</h1>
+                <p class="mb-0 text-body-secondary">Create, edit, and inspect boards while you refine the app's theme.</p>
             </div>
-            <a class="btn btn-outline-dark" href="{{ path('styleguide_index') }}">Open style guide</a>
+            <a class="btn btn-outline-dark btn-sm" href="{{ path('styleguide_index') }}">Open style guide</a>
         </div>
     </section>
 
@@ -18,9 +18,9 @@
         <div class="alert alert-success" role="alert">{{ message }}</div>
     {% endfor %}
 
-    <div class="row g-4 align-items-start">
-        <div class="col-xl-4">
-            <section class="panel p-4">
+    <div class="board-layout align-items-start">
+        <div class="board-sidebar vstack gap-3">
+            <section class="panel p-3 p-lg-4">
                 <div class="section-heading mb-4">
                     <p class="eyebrow">Create</p>
                     <h2 class="h3 mb-0">New board</h2>
@@ -32,11 +32,19 @@
                 <button class="btn btn-primary" type="submit">Create board</button>
                 {{ form_end(createForm, { render_rest: false }) }}
             </section>
+
+            <section class="panel board-sidebar-placeholder p-3 p-lg-4">
+                <div class="section-heading mb-3">
+                    <p class="eyebrow">Presets</p>
+                    <h2 class="h5 mb-0">Reserved space</h2>
+                </div>
+                <p class="mb-0 text-body-secondary">This area is left open for preset selection and related controls.</p>
+            </section>
         </div>
 
-        <div class="col-xl-8">
+        <div class="board-content">
             <section class="vstack gap-4">
-                <div class="section-heading">
+                <div class="section-heading mb-0">
                     <p class="eyebrow">Library</p>
                     <h2 class="h3 mb-0">Existing boards</h2>
                 </div>
@@ -47,44 +55,49 @@
                     </div>
                 {% endif %}
 
-                {% for board in boards %}
-                    {% set updateForm = updateForms[board.id] %}
-                    {% set deleteForm = deleteForms[board.id] %}
-                    <article class="panel p-4">
-                        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-3 mb-3">
-                            <div>
-                                <p class="eyebrow mb-2">Board {{ board.id }}</p>
-                                <h3 class="h4 mb-1">
-                                    <a class="link-dark text-decoration-none" href="{{ path('board_show', { id: board.id }) }}">
-                                        {{ board.title }}
-                                    </a>
-                                </h3>
-                                <p class="text-body-secondary mb-0">
-                                    {{ board.isTurretMode ? 'Turret mode enabled' : 'Standard mode' }}
-                                </p>
-                            </div>
-                            <a class="btn btn-sm btn-outline-dark" href="{{ path('board_show', { id: board.id }) }}">View board</a>
-                        </div>
+                {% if boards is not empty %}
+                    <div class="board-grid">
+                        {% for board in boards %}
+                            {% set updateForm = updateForms[board.id] %}
+                            {% set deleteForm = deleteForms[board.id] %}
+                            <article class="panel board-card p-3">
+                                <div class="mb-3">
+                                    <div>
+                                        <p class="eyebrow mb-1">Board {{ board.id }}</p>
+                                        <h3 class="h5 mb-1">
+                                            <a class="link-dark text-decoration-none" href="{{ path('board_show', { id: board.id }) }}">
+                                                {{ board.title }}
+                                            </a>
+                                        </h3>
+                                        <p class="text-body-secondary mb-0">
+                                            {{ board.isTurretMode ? 'Turret mode enabled' : 'Standard mode' }}
+                                        </p>
+                                    </div>
+                                </div>
 
-                        {{ form_start(updateForm) }}
-                        <div class="row g-3">
-                            <div class="col-md-8">
-                                {{ form_row(updateForm.title) }}
-                            </div>
-                            <div class="col-md-4">
-                                {{ form_row(updateForm.isTurretMode) }}
-                            </div>
-                        </div>
-                        {{ form_rest(updateForm) }}
-                        <button class="btn btn-primary" type="submit">Update</button>
-                        {{ form_end(updateForm, { render_rest: false }) }}
+                                <div class="board-card-footer">
+                                    {{ form_start(updateForm, { attr: { class: 'board-card-form board-card-form--update' } }) }}
+                                    {{ form_row(updateForm.title) }}
+                                    {{ form_row(updateForm.isTurretMode) }}
+                                    {{ form_rest(updateForm) }}
+                                    <div class="board-card-actions">
+                                        <button class="btn btn-primary btn-sm" type="submit">Update</button>
+                                    </div>
+                                    {{ form_end(updateForm, { render_rest: false }) }}
 
-                        {{ form_start(deleteForm, { attr: { class: 'mt-2' } }) }}
-                        {{ form_rest(deleteForm) }}
-                        <button class="btn btn-outline-danger" type="submit">Delete</button>
-                        {{ form_end(deleteForm, { render_rest: false }) }}
-                    </article>
-                {% endfor %}
+                                    {{ form_start(deleteForm, { attr: { class: 'board-card-form board-card-form--delete' } }) }}
+                                    {{ form_rest(deleteForm) }}
+                                    <div class="board-card-actions">
+                                        <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
+                                    </div>
+                                    {{ form_end(deleteForm, { render_rest: false }) }}
+
+                                    <a class="btn btn-outline-dark board-card-view" href="{{ path('board_show', { id: board.id }) }}">View</a>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </section>
         </div>
     </div>
