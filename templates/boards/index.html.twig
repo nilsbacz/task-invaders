@@ -1,52 +1,91 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Boards</title>
-    </head>
-    <body>
-        <main>
-            <h1>Boards</h1>
+{% extends 'base.html.twig' %}
 
-            {% for message in app.flashes('success') %}
-                <p>{{ message }}</p>
-            {% endfor %}
+{% block title %}Boards{% endblock %}
 
-            <section>
-                <h2>Create a new board</h2>
+{% block body %}
+    <section class="hero-panel mb-4">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-end justify-content-between gap-3">
+            <div>
+                <p class="eyebrow mb-2">Boards</p>
+                <h1 class="display-5 mb-2">Manage your task boards.</h1>
+                <p class="lead mb-0">Create, edit, and inspect boards while you refine the app's theme.</p>
+            </div>
+            <a class="btn btn-outline-dark" href="{{ path('styleguide_index') }}">Open style guide</a>
+        </div>
+    </section>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success" role="alert">{{ message }}</div>
+    {% endfor %}
+
+    <div class="row g-4 align-items-start">
+        <div class="col-xl-4">
+            <section class="panel p-4">
+                <div class="section-heading mb-4">
+                    <p class="eyebrow">Create</p>
+                    <h2 class="h3 mb-0">New board</h2>
+                </div>
                 {{ form_start(createForm) }}
                 {{ form_row(createForm.title) }}
                 {{ form_row(createForm.isTurretMode) }}
                 {{ form_rest(createForm) }}
-                <button type="submit">Create</button>
+                <button class="btn btn-primary" type="submit">Create board</button>
                 {{ form_end(createForm, { render_rest: false }) }}
             </section>
+        </div>
 
-            <section>
-                <h2>Existing boards</h2>
+        <div class="col-xl-8">
+            <section class="vstack gap-4">
+                <div class="section-heading">
+                    <p class="eyebrow">Library</p>
+                    <h2 class="h3 mb-0">Existing boards</h2>
+                </div>
+
                 {% if boards is empty %}
-                    <p>No boards yet.</p>
+                    <div class="panel p-4">
+                        <p class="mb-0">No boards yet.</p>
+                    </div>
                 {% endif %}
 
                 {% for board in boards %}
                     {% set updateForm = updateForms[board.id] %}
                     {% set deleteForm = deleteForms[board.id] %}
-                    <article>
-                        <h3><a href="{{ path('board_show', { id: board.id }) }}">Board {{ board.id }}</a></h3>
+                    <article class="panel p-4">
+                        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-3 mb-3">
+                            <div>
+                                <p class="eyebrow mb-2">Board {{ board.id }}</p>
+                                <h3 class="h4 mb-1">
+                                    <a class="link-dark text-decoration-none" href="{{ path('board_show', { id: board.id }) }}">
+                                        {{ board.title }}
+                                    </a>
+                                </h3>
+                                <p class="text-body-secondary mb-0">
+                                    {{ board.isTurretMode ? 'Turret mode enabled' : 'Standard mode' }}
+                                </p>
+                            </div>
+                            <a class="btn btn-sm btn-outline-dark" href="{{ path('board_show', { id: board.id }) }}">View board</a>
+                        </div>
+
                         {{ form_start(updateForm) }}
-                        {{ form_row(updateForm.title) }}
-                        {{ form_row(updateForm.isTurretMode) }}
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                {{ form_row(updateForm.title) }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form_row(updateForm.isTurretMode) }}
+                            </div>
+                        </div>
                         {{ form_rest(updateForm) }}
-                        <button type="submit">Update</button>
+                        <button class="btn btn-primary" type="submit">Update</button>
                         {{ form_end(updateForm, { render_rest: false }) }}
-                        {{ form_start(deleteForm) }}
+
+                        {{ form_start(deleteForm, { attr: { class: 'mt-2' } }) }}
                         {{ form_rest(deleteForm) }}
-                        <button type="submit">Delete</button>
+                        <button class="btn btn-outline-danger" type="submit">Delete</button>
                         {{ form_end(deleteForm, { render_rest: false }) }}
                     </article>
                 {% endfor %}
             </section>
-        </main>
-    </body>
-</html>
+        </div>
+    </div>
+{% endblock %}

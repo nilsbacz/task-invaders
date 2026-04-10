@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Task Invaders{% endblock %}</title>
+        {{ importmap('app') }}
+    </head>
+    <body>
+        {% set route = app.request.attributes.get('_route')|default('') %}
+
+        <header class="site-header">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container py-3">
+                    <a class="navbar-brand brand-mark" href="{{ path('board_index') }}">Task Invaders</a>
+                    <button
+                        class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#primary-nav"
+                        aria-controls="primary-nav"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation"
+                    >
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div id="primary-nav" class="collapse navbar-collapse">
+                        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                            <li class="nav-item">
+                                <a
+                                    class="nav-link {{ route starts with 'board_' ? 'active' : '' }}"
+                                    href="{{ path('board_index') }}"
+                                >
+                                    Boards
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a
+                                    class="nav-link {{ route == 'styleguide_index' ? 'active' : '' }}"
+                                    href="{{ path('styleguide_index') }}"
+                                >
+                                    Style Guide
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main class="page-shell">
+            <div class="container py-4 py-lg-5">
+                {% block body %}{% endblock %}
+            </div>
+        </main>
+    </body>
+</html>
