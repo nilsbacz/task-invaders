@@ -18,9 +18,9 @@
     --bs-border-color: rgba(222, 216, 74, 0.22);
     --bs-box-shadow-sm: 0 0 0 1px rgba(65, 255, 120, 0.18);
     --bs-box-shadow: 0 0 0 1px rgba(222, 216, 74, 0.18), 0 0 24px rgba(65, 255, 120, 0.07);
-    --bs-font-sans-serif: "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    --bs-body-font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    --app-font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    --bs-font-sans-serif: "Ubuntu Mono", "DejaVu Sans Mono", "SFMono-Regular", Consolas, monospace;
+    --bs-body-font-family: "Ubuntu Mono", "DejaVu Sans Mono", "SFMono-Regular", Consolas, monospace;
+    --app-font-display: "Ubuntu Mono", "DejaVu Sans Mono", "SFMono-Regular", Consolas, monospace;
     --app-panel: rgba(7, 10, 7, 0.2);
     --app-panel-strong: rgba(12, 16, 12, 0.2);
     --app-shadow: 0 0 0 1px rgba(222, 216, 74, 0.16), 0 0 26px rgba(65, 255, 120, 0.06);
