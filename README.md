@@ -1,5 +1,10 @@
 # task-invaders
 
+[![Lint](https://github.com/nilsbacz/task-invaders/actions/workflows/lint.yml/badge.svg)](https://github.com/nilsbacz/task-invaders/actions/workflows/lint.yml)
+[![Coverage](https://github.com/nilsbacz/task-invaders/actions/workflows/coverage.yml/badge.svg)](https://github.com/nilsbacz/task-invaders/actions/workflows/coverage.yml)
+![PHP](https://img.shields.io/badge/PHP-8.4-777bb4?logo=php&logoColor=white)
+![Symfony](https://img.shields.io/badge/Symfony-8.0-000000?logo=symfony&logoColor=white)
+
 ## Docker Symfony 8.0 Setup
 
 ### Stack

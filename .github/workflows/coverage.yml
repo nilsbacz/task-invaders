@@ -1,45 +1,17 @@
-name: CI
+name: Coverage
 
 on:
+    push:
+        branches:
+            - main
     pull_request:
 
 permissions:
     contents: read
 
 jobs:
-    lint:
-        name: php lint
-        runs-on: ubuntu-latest
-
-        steps:
-            -   uses: actions/checkout@v4
-
-            -   uses: shivammathur/setup-php@v2
-                with:
-                    php-version: '8.4'
-                    extensions: mbstring, intl, pdo_mysql, zip
-                    coverage: none
-                    tools: composer:v2
-
-            -   name: Cache Composer
-                uses: actions/cache@v4
-                with:
-                    path: ~/.composer/cache/files
-                    key: composer-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
-                    restore-keys: |
-                        composer-${{ runner.os }}-
-
-            -   name: Install Composer deps
-                run: composer install --no-interaction --prefer-dist --no-progress
-
-            -   name: Lint (PHP_CodeSniffer)
-                run: ./vendor/bin/phpcs --standard=phpcs.xml
-
-            -   name: Static analysis (PHPStan)
-                run: ./vendor/bin/phpstan analyse -c phpstan.neon
-
-    tests:
-        name: php unit
+    coverage:
+        name: PHPUnit with coverage
         runs-on: ubuntu-latest
 
         services:
@@ -50,7 +22,8 @@ jobs:
                     MYSQL_USER: task-invaders
                     MYSQL_PASSWORD: task-invaders
                     MYSQL_ROOT_PASSWORD: rootsecret
-                ports: [ "3306:3306" ]
+                ports:
+                    - "3306:3306"
                 options: >-
                     --health-cmd="mysqladmin ping -h 127.0.0.1 -prootsecret"
                     --health-interval=5s --health-timeout=5s --health-retries=20
