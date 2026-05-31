@@ -30,7 +30,7 @@ This is a lightweight checklist for personal planning. No timelines required.
 - [ ] Add/edit/remove rows
 - [ ] Add/edit/remove tasks
 - [ ] Moving and spawning tasks
-- [ ] Shooting tasks
+- [x] Shooting tasks
 - [ ] Auto shooting with vacation mode
 
 ## Game Mechanics
