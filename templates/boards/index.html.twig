@@ -60,6 +60,8 @@
                         {% for board in boards %}
                             {% set updateForm = updateForms[board.id] %}
                             {% set deleteForm = deleteForms[board.id] %}
+                            {% set updateFormId = 'board-update-' ~ board.id %}
+                            {% set deleteFormId = 'board-delete-' ~ board.id %}
                             <article class="panel board-card p-3">
                                 <div class="mb-3">
                                     <div>
@@ -76,23 +78,24 @@
                                 </div>
 
                                 <div class="board-card-footer">
-                                    {{ form_start(updateForm, { attr: { class: 'board-card-form board-card-form--update' } }) }}
+                                    {{ form_start(updateForm, { attr: { class: 'board-card-form board-card-form--update', id: updateFormId } }) }}
                                     {{ form_row(updateForm.title) }}
                                     {{ form_row(updateForm.isTurretMode) }}
                                     {{ form_rest(updateForm) }}
-                                    <div class="board-card-actions">
-                                        <button class="btn btn-primary btn-sm" type="submit">Update</button>
-                                    </div>
                                     {{ form_end(updateForm, { render_rest: false }) }}
 
-                                    {{ form_start(deleteForm, { attr: { class: 'board-card-form board-card-form--delete' } }) }}
+                                    {{ form_start(deleteForm, { attr: { class: 'board-card-form board-card-form--delete', id: deleteFormId } }) }}
                                     {{ form_rest(deleteForm) }}
-                                    <div class="board-card-actions">
-                                        <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
-                                    </div>
                                     {{ form_end(deleteForm, { render_rest: false }) }}
 
-                                    <a class="btn btn-outline-dark board-card-view" href="{{ path('board_show', { id: board.id }) }}">View</a>
+                                    <div class="board-card-controls">
+                                        <div class="board-card-actions">
+                                            <button class="btn btn-primary btn-sm" type="submit" form="{{ updateFormId }}">Update</button>
+                                            <button class="btn btn-outline-danger btn-sm" type="submit" form="{{ deleteFormId }}">Delete</button>
+                                        </div>
+
+                                        <a class="btn btn-outline-dark board-card-view" href="{{ path('board_show', { id: board.id }) }}">View</a>
+                                    </div>
                                 </div>
                             </article>
                         {% endfor %}
