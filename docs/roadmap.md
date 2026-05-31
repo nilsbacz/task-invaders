@@ -7,12 +7,12 @@ This is a lightweight checklist for personal planning. No timelines required.
 - [x] Style/script assets
 - [x] First stylesheet
 - [ ] Breadcrumbs
-- [ ] Board structure
+- [ ] Lane structure setup view
 
 ## Preset Editor
 
 - [x] General YAML structure
-- [x] Default rows
+- [x] Default lanes
 - [x] First preset
 - [x] Default tasks
 - [ ] More presets, selectable
@@ -24,12 +24,15 @@ This is a lightweight checklist for personal planning. No timelines required.
 - [ ] Make it pretty
 - [ ] Make it account specific
 - [ ] Selectable presets
+- [ ] Replace board detail page with the playfield view
+- [ ] Keep setup/editing available without dominating the board page
 
 ## Board Functionality
 
-- [x] Add/edit/remove rows
+- [x] Add/edit/remove lanes
 - [x] Add/edit/remove tasks
-- [ ] Moving and spawning tasks
+- [ ] Move tasks between lanes
+- [ ] Spawn active task instances from task schedules
 - [x] Shooting tasks
 - [ ] Auto shooting with vacation mode
 
@@ -38,7 +41,13 @@ This is a lightweight checklist for personal planning. No timelines required.
 - [ ] Define task instance model
 - [ ] Calculate invader position from spawn time and base time
 - [ ] Enforce shield blocking rules
-- [ ] Define what happens when a task reaches the base
+- [ ] Define green base behavior: respawn without interrupting the board
+- [ ] Define yellow base behavior: strong highlight at the base
+- [ ] Escalate yellow tasks to red behavior after 10% extra lifetime at the base
+- [ ] Reset escalated yellow tasks back to yellow behavior after completion
+- [ ] Define red base behavior: blocking focus state until completion
+- [ ] Implement red focus order: earliest base reach first, exact tie newest task first
+- [ ] Immediately show the next waiting red task after the focused task is completed
 - [ ] Track completed shots/task completions
 - [ ] Preserve completion history instead of deleting completed tasks
 
@@ -64,20 +73,43 @@ This is a lightweight checklist for personal planning. No timelines required.
 - [ ] Show risk level visually
 - [ ] Show shield state visually
 - [ ] Show next spawn/base timing
+- [ ] Open task details/editing from a playfield task tile
 
 ## Board Experience
 
 - [ ] Render tasks as invaders
-- [ ] Show base/progress per row
+- [ ] Render lanes as vertical playfield columns
+- [ ] Show base/progress per lane
+- [ ] Position tasks by elapsed spawn-to-base percentage
 - [ ] Show blocked tasks behind shielded tasks
-- [ ] Add empty states for rows and boards
+- [ ] Add compact board header with breadcrumb, title, expandable description, and add-lane action
+- [ ] Show upcoming tasks per lane
+- [ ] Make upcoming task sections hideable per lane
+- [ ] Render risk level through task tile borders
+- [ ] Render shield state through an additional tile marker or border
+- [ ] Handle overlapping tasks in the same lane
+- [ ] Add popup/detail widget for overlapped task stacks
+- [ ] Add red-task focus state that hides the rest of the board
+- [ ] Add empty states for lanes and boards
 - [ ] Add confirmation for destructive actions
+
+## Task Overview
+
+- [ ] Add separate task overview page
+- [ ] Show disabled tasks
+- [ ] Show finished tasks
+- [ ] Show inactive or non-respawning tasks
+- [ ] Link from the playfield to task overview
 
 ## Wording And Language
 
-- [ ] Implement first wording convention: professional
-- [ ] Implement German translations
-- [ ] Implement second wording convention with a switch system: gamified
+- [ ] Implement casual English wording
+- [ ] Implement gamified English wording
+- [ ] Implement casual German wording
+- [ ] Implement gamified German wording
+- [ ] Add tone switch: casual/gamified
+- [ ] Add locale switch: English/German
+- [ ] Allow small board presentation differences between casual and gamified tone
 
 ## Accounts
 
