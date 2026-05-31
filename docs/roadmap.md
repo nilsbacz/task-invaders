@@ -27,7 +27,7 @@ This is a lightweight checklist for personal planning. No timelines required.
 
 ## Board Functionality
 
-- [ ] Add/edit/remove rows
+- [x] Add/edit/remove rows
 - [ ] Add/edit/remove tasks
 - [ ] Moving and spawning tasks
 - [x] Shooting tasks

@@ -18,50 +18,95 @@
         <div class="alert alert-success" role="alert">{{ message }}</div>
     {% endfor %}
 
-    <section class="section-heading mb-4">
-        <p class="eyebrow">Rows</p>
-        <h2 class="h3 mb-0">Board structure</h2>
-    </section>
-
-    {% if board.boardRows is empty %}
-        <div class="panel p-4">
-            <p class="mb-0">No rows yet.</p>
-        </div>
-    {% else %}
-        <div class="row g-4">
-            {% for row in board.boardRows %}
-                <div class="col-lg-6 col-xl-4">
-                    <article class="panel h-100 p-4">
-                        <h3 class="h4 mb-3">{{ row.title }}</h3>
-
-                        {% set activeTasks = row.activeTasks %}
-                        {% if activeTasks is empty %}
-                            <p class="text-body-secondary mb-0">No tasks yet.</p>
-                        {% else %}
-                            <ul class="list-group list-group-flush">
-                                {% for task in activeTasks %}
-                                    {% set shootForm = shootForms[task.id] ?? null %}
-                                    <li class="list-group-item d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
-                                        <span>{{ task.title }}</span>
-                                        {% if shootForm is not null %}
-                                            {{ form_start(shootForm, { attr: { class: 'm-0' } }) }}
-                                            {{ form_rest(shootForm) }}
-                                            <button
-                                                class="btn btn-primary btn-sm"
-                                                type="submit"
-                                                aria-label="Shoot {{ task.title }}"
-                                            >
-                                                Shoot
-                                            </button>
-                                            {{ form_end(shootForm, { render_rest: false }) }}
-                                        {% endif %}
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
-                    </article>
+    <div class="board-layout align-items-start">
+        <div class="board-sidebar">
+            <section class="panel p-3 p-lg-4">
+                <div class="section-heading mb-4">
+                    <p class="eyebrow">Rows</p>
+                    <h2 class="h3 mb-0">New row</h2>
                 </div>
-            {% endfor %}
+                {{ form_start(rowCreateForm) }}
+                {{ form_row(rowCreateForm.title) }}
+                {{ form_rest(rowCreateForm) }}
+                <button class="btn btn-primary" type="submit">Add row</button>
+                {{ form_end(rowCreateForm, { render_rest: false }) }}
+            </section>
         </div>
-    {% endif %}
+
+        <div class="board-content">
+            <section class="vstack gap-4">
+                <div class="section-heading mb-0">
+                    <p class="eyebrow">Rows</p>
+                    <h2 class="h3 mb-0">Board structure</h2>
+                </div>
+
+                {% if board.boardRows is empty %}
+                    <div class="panel p-4">
+                        <p class="mb-0">No rows yet.</p>
+                    </div>
+                {% endif %}
+
+                {% if board.boardRows is not empty %}
+                    <div class="board-grid">
+                        {% for row in board.boardRows %}
+                            {% set updateForm = rowUpdateForms[row.id] %}
+                            {% set deleteForm = rowDeleteForms[row.id] %}
+                            {% set updateFormId = 'board-row-update-' ~ row.id %}
+                            {% set deleteFormId = 'board-row-delete-' ~ row.id %}
+                            <article class="panel board-card h-100 p-3">
+                                <div class="mb-3">
+                                    <p class="eyebrow mb-1">Row {{ row.rowNumber }}</p>
+                                    <h3 class="h5 mb-0">{{ row.title }}</h3>
+                                </div>
+
+                                <div class="board-card-footer">
+                                    {{ form_start(updateForm, { attr: { class: 'board-card-form board-card-form--update', id: updateFormId } }) }}
+                                    {{ form_row(updateForm.title) }}
+                                    {{ form_rest(updateForm) }}
+                                    {{ form_end(updateForm, { render_rest: false }) }}
+
+                                    {{ form_start(deleteForm, { attr: { class: 'board-card-form board-card-form--delete', id: deleteFormId } }) }}
+                                    {{ form_rest(deleteForm) }}
+                                    {{ form_end(deleteForm, { render_rest: false }) }}
+
+                                    <div class="board-card-actions">
+                                        <button class="btn btn-primary btn-sm" type="submit" form="{{ updateFormId }}">Update row</button>
+                                        <button class="btn btn-outline-danger btn-sm" type="submit" form="{{ deleteFormId }}">Remove row</button>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    {% set activeTasks = row.activeTasks %}
+                                    {% if activeTasks is empty %}
+                                        <p class="text-body-secondary mb-0">No tasks yet.</p>
+                                    {% else %}
+                                        <ul class="list-group list-group-flush">
+                                            {% for task in activeTasks %}
+                                                {% set shootForm = shootForms[task.id] ?? null %}
+                                                <li class="list-group-item d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+                                                    <span>{{ task.title }}</span>
+                                                    {% if shootForm is not null %}
+                                                        {{ form_start(shootForm, { attr: { class: 'm-0' } }) }}
+                                                        {{ form_rest(shootForm) }}
+                                                        <button
+                                                            class="btn btn-primary btn-sm"
+                                                            type="submit"
+                                                            aria-label="Shoot {{ task.title }}"
+                                                        >
+                                                            Shoot
+                                                        </button>
+                                                        {{ form_end(shootForm, { render_rest: false }) }}
+                                                    {% endif %}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+    </div>
 {% endblock %}
