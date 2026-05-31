@@ -8,6 +8,7 @@ use App\Board\Infrastructure\Persistence\DoctrineBoardRepository;
 use App\Board\Infrastructure\Persistence\DoctrineBoardRowRepository;
 use App\Repository\SpriteRepository;
 use App\Repository\TaskDescriptionRepository;
+use App\Repository\TaskInstanceRepository;
 use App\Repository\TaskRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -20,6 +21,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(DoctrineBoardRowRepository::class)]
 #[CoversClass(SpriteRepository::class)]
 #[CoversClass(TaskDescriptionRepository::class)]
+#[CoversClass(TaskInstanceRepository::class)]
 #[CoversClass(TaskRepository::class)]
 final class RepositorySmokeTest extends TestCase
 {
@@ -51,6 +53,7 @@ final class RepositorySmokeTest extends TestCase
                 'board_row'        => [DoctrineBoardRowRepository::class],
                 'sprite'           => [SpriteRepository::class],
                 'task_description' => [TaskDescriptionRepository::class],
+                'task_instance'    => [TaskInstanceRepository::class],
                 'task'             => [TaskRepository::class],
                ];
     }

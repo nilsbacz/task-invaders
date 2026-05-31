@@ -7,11 +7,15 @@ namespace App\Entity;
 use App\Board\Domain\BoardRow;
 use App\Enum\TaskRiskLevel;
 use App\Repository\TaskRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
+#[ORM\Table(name: 'task')]
+#[ORM\Index(name: 'IDX_TASK_NEXT_SPAWN_AT', columns: ['next_spawn_at'])]
 #[ORM\HasLifecycleCallbacks]
 class Task
 {
@@ -44,6 +48,12 @@ class Task
     private \DateTimeImmutable $spawnDate;
 
     #[ORM\Column]
+    private \DateTimeImmutable $createdAt;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $nextSpawnAt = null;
+
+    #[ORM\Column]
     #[Assert\GreaterThanOrEqual(value: 0)]
     private int $respawnsIn = 0;
 
@@ -73,6 +83,24 @@ class Task
 
     #[ORM\ManyToOne]
     private ?Sprite $sprite = null;
+
+    /**
+     * @var Collection<int, TaskInstance>
+     */
+    #[ORM\OneToMany(
+        mappedBy: 'task',
+        targetEntity: TaskInstance::class,
+        cascade: ['persist'],
+        orphanRemoval: false
+    )]
+    #[ORM\OrderBy(['spawnedAt' => 'ASC', 'id' => 'ASC'])]
+    private Collection $taskInstances;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->taskInstances = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -123,6 +151,7 @@ class Task
     public function setSpawnDate(\DateTimeImmutable $spawnDate): static
     {
         $this->spawnDate = $spawnDate;
+        $this->nextSpawnAt = $spawnDate;
 
         return $this;
     }
@@ -132,9 +161,47 @@ class Task
         return $this->spawnDate->add($this->minutesInterval($this->reachesBaseIn));
     }
 
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getNextSpawnAt(): ?\DateTimeImmutable
+    {
+        return $this->nextSpawnAt;
+    }
+
+    public function setNextSpawnAt(?\DateTimeImmutable $nextSpawnAt): static
+    {
+        $this->nextSpawnAt = $nextSpawnAt;
+
+        return $this;
+    }
+
+    public function reachesBaseAt(\DateTimeImmutable $spawnedAt): \DateTimeImmutable
+    {
+        return $spawnedAt->add($this->minutesInterval($this->reachesBaseIn));
+    }
+
     public function scheduleNextSpawnAfterShot(\DateTimeImmutable $shotAt): static
     {
-        $this->spawnDate = $shotAt->add($this->minutesInterval($this->respawnsIn));
+        $nextSpawnAt = $shotAt->add($this->minutesInterval($this->respawnsIn));
+        $this->spawnDate = $nextSpawnAt;
+        $this->nextSpawnAt = $nextSpawnAt;
+
+        return $this;
+    }
+
+    public function scheduleNextInstanceSpawnAfterShot(\DateTimeImmutable $shotAt): static
+    {
+        $this->nextSpawnAt = $shotAt->add($this->minutesInterval($this->respawnsIn));
 
         return $this;
     }
@@ -253,6 +320,31 @@ class Task
     public function setSprite(?Sprite $sprite): static
     {
         $this->sprite = $sprite;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TaskInstance>
+     */
+    public function getTaskInstances(): Collection
+    {
+        return $this->taskInstances;
+    }
+
+    public function addTaskInstance(TaskInstance $taskInstance): static
+    {
+        if (!$this->taskInstances->contains($taskInstance)) {
+            $this->taskInstances->add($taskInstance);
+            $taskInstance->setTask($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTaskInstance(TaskInstance $taskInstance): static
+    {
+        $this->taskInstances->removeElement($taskInstance);
 
         return $this;
     }

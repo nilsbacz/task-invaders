@@ -10,6 +10,7 @@ use App\Enum\TaskRiskLevel;
 use App\Entity\Sprite;
 use App\Entity\Task;
 use App\Entity\TaskDescription;
+use App\Entity\TaskInstance;
 use DateTimeImmutable;
 use LogicException;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -22,6 +23,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(BoardRow::class)]
 #[UsesClass(Sprite::class)]
 #[UsesClass(TaskDescription::class)]
+#[UsesClass(TaskInstance::class)]
 #[UsesClass(TaskRiskLevel::class)]
 final class TaskTest extends TestCase
 {
@@ -39,6 +41,9 @@ final class TaskTest extends TestCase
         self::assertFalse($task->isRespawnImmediatelyAfterDeath());
         self::assertSame(0, $task->getSpeedFactor());
         self::assertNull($task->getCompletedAt());
+        self::assertInstanceOf(DateTimeImmutable::class, $task->getCreatedAt());
+        self::assertNull($task->getNextSpawnAt());
+        self::assertCount(0, $task->getTaskInstances());
         self::assertFalse($task->isCompleted());
         self::assertTrue($task->shouldAppearOnBoard());
         self::assertTrue($task->canBeDeleted());
@@ -52,6 +57,8 @@ final class TaskTest extends TestCase
 
         $task = new Task();
         $spawnDate = new DateTimeImmutable('2025-01-01T10:00:00+00:00');
+        $createdAt = new DateTimeImmutable('2024-12-31T10:00:00+00:00');
+        $nextSpawnAt = new DateTimeImmutable('2025-01-02T10:00:00+00:00');
         $boardRow = new BoardRow();
         $description = new TaskDescription();
         $sprite = new Sprite();
@@ -61,6 +68,8 @@ final class TaskTest extends TestCase
         $setBoardRowResult = $task->setBoardRow($boardRow);
         $setRiskLevelResult = $task->setRiskLevel(TaskRiskLevel::YELLOW);
         $setSpawnDateResult = $task->setSpawnDate($spawnDate);
+        $setCreatedAtResult = $task->setCreatedAt($createdAt);
+        $setNextSpawnAtResult = $task->setNextSpawnAt($nextSpawnAt);
         $setRespawnsInResult = $task->setRespawnsIn(5);
         $setSpawnsEveryResult = $task->setSpawnsEvery(10);
         $setReachesBaseInResult = $task->setReachesBaseIn(3);
@@ -75,6 +84,8 @@ final class TaskTest extends TestCase
         self::assertSame($task, $setBoardRowResult);
         self::assertSame($task, $setRiskLevelResult);
         self::assertSame($task, $setSpawnDateResult);
+        self::assertSame($task, $setCreatedAtResult);
+        self::assertSame($task, $setNextSpawnAtResult);
         self::assertSame($task, $setRespawnsInResult);
         self::assertSame($task, $setSpawnsEveryResult);
         self::assertSame($task, $setReachesBaseInResult);
@@ -87,6 +98,8 @@ final class TaskTest extends TestCase
         self::assertSame($boardRow, $task->getBoardRow());
         self::assertSame(TaskRiskLevel::YELLOW, $task->getRiskLevel());
         self::assertSame($spawnDate, $task->getSpawnDate());
+        self::assertSame($createdAt, $task->getCreatedAt());
+        self::assertSame($nextSpawnAt, $task->getNextSpawnAt());
         self::assertSame(5, $task->getRespawnsIn());
         self::assertSame(10, $task->getSpawnsEvery());
         self::assertSame(3, $task->getReachesBaseIn());
@@ -142,7 +155,55 @@ final class TaskTest extends TestCase
 
         self::assertSame($task, $result);
         self::assertSame('2026-05-31T10:30:00+00:00', $task->getSpawnDate()->format(DATE_ATOM));
+        self::assertSame('2026-05-31T10:30:00+00:00', $task->getNextSpawnAt()?->format(DATE_ATOM));
         self::assertSame('2026-05-31T12:00:00+00:00', $task->getBaseDate()->format(DATE_ATOM));
+    }
+
+    #[Test]
+    public function itSchedulesOnlyTheInstanceSpawnCursor(): void
+    {
+
+        $task = new Task();
+        $spawnDate = new DateTimeImmutable('2026-05-31T09:00:00+00:00');
+        $shotAt = new DateTimeImmutable('2026-05-31T10:00:00+00:00');
+        $task->setSpawnDate($spawnDate);
+        $task->setRespawnsIn(20);
+
+
+        $result = $task->scheduleNextInstanceSpawnAfterShot($shotAt);
+
+
+        self::assertSame($task, $result);
+        self::assertSame($spawnDate, $task->getSpawnDate());
+        self::assertSame('2026-05-31T10:20:00+00:00', $task->getNextSpawnAt()?->format(DATE_ATOM));
+    }
+
+    #[Test]
+    public function itManagesTaskInstances(): void
+    {
+
+        $task = new Task();
+        $spawnedAt = new DateTimeImmutable('2026-05-31T10:00:00+00:00');
+        $task->setReachesBaseIn(30);
+        $taskInstance = new TaskInstance(
+            $task,
+            $spawnedAt,
+            new DateTimeImmutable('2026-05-31T10:30:00+00:00')
+        );
+
+
+        $addResult = $task->addTaskInstance($taskInstance);
+        $removeResult = $task->removeTaskInstance($taskInstance);
+
+
+        self::assertSame($task, $addResult);
+        self::assertSame($task, $removeResult);
+        self::assertSame($task, $taskInstance->getTask());
+        self::assertCount(0, $task->getTaskInstances());
+        self::assertSame(
+            '2026-05-31T10:30:00+00:00',
+            $task->reachesBaseAt($spawnedAt)->format(DATE_ATOM)
+        );
     }
 
     #[Test]
