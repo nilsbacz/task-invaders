@@ -8,6 +8,7 @@ use App\Board\Domain\Board;
 use App\Board\Domain\BoardRow;
 use App\Entity\Task;
 use App\Service\TaskShootFormFactory;
+use DateTimeImmutable;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -65,9 +66,12 @@ final class TaskShootFormFactoryTest extends TestCase
         $board->addBoardRow($boardRow);
         $taskOne = $this->createTaskFixtureWithId(13);
         $taskTwo = $this->createTaskFixtureWithId(14);
+        $completedTask = $this->createTaskFixtureWithId(15);
+        $completedTask->complete(new DateTimeImmutable('2026-05-31T10:00:00+00:00'));
         $taskWithoutId = new Task();
         $boardRow->addTask($taskOne);
         $boardRow->addTask($taskTwo);
+        $boardRow->addTask($completedTask);
         $boardRow->addTask($taskWithoutId);
         $errorForm = $this->createErrorFormFixture();
 

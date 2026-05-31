@@ -84,7 +84,13 @@ final class BoardControllerTest extends AbstractDatabaseWebTestCase
         self::assertSelectorTextNotContains('main', 'Workout');
 
         $this->entityManager->clear();
-        self::assertNull($this->entityManager->getRepository(Task::class)->find($taskId));
+        $updatedTask = $this->entityManager->getRepository(Task::class)->find($taskId);
+        self::assertInstanceOf(Task::class, $updatedTask);
+        self::assertSame($taskId, $updatedTask->getId());
+        self::assertTrue($updatedTask->isCompleted());
+        self::assertNotNull($updatedTask->getCompletedAt());
+        self::assertNotNull($updatedTask->getBoardRow());
+        self::assertCount(1, $this->entityManager->getRepository(Task::class)->findAll());
     }
 
     #[Test]
@@ -125,6 +131,9 @@ final class BoardControllerTest extends AbstractDatabaseWebTestCase
         $updatedTask = $this->entityManager->getRepository(Task::class)->find($taskId);
         self::assertInstanceOf(Task::class, $updatedTask);
         self::assertSame($taskId, $updatedTask->getId());
+        self::assertTrue($updatedTask->isCompleted());
+        self::assertNotNull($updatedTask->getCompletedAt());
+        self::assertCount(1, $this->entityManager->getRepository(Task::class)->findAll());
 
         $spawnTimestamp = $updatedTask->getSpawnDate()->getTimestamp();
         self::assertGreaterThanOrEqual(

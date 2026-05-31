@@ -52,7 +52,7 @@ final readonly class TaskShootFormFactory
         $forms = [];
 
         foreach ($board->getBoardRows() as $boardRow) {
-            foreach ($boardRow->getTasks() as $task) {
+            foreach ($boardRow->getActiveTasks() as $task) {
                 $taskId = $task->getId();
                 if ($taskId === null) {
                     continue;

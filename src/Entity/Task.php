@@ -11,6 +11,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Task
 {
     #[ORM\Id]
@@ -23,7 +24,7 @@ class Task
     private string $title;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
-    #[ORM\JoinColumn(name: 'board_row_id', nullable: false)]
+    #[ORM\JoinColumn(name: 'board_row_id', nullable: true)]
     private ?BoardRow $boardRow = null;
 
     #[ORM\Column(
@@ -54,6 +55,9 @@ class Task
 
     #[ORM\Column]
     private int $speedFactor = 0;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $completedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     private ?TaskDescription $taskDescription = null;
@@ -124,6 +128,28 @@ class Task
         $this->spawnDate = $shotAt->add($this->minutesInterval($this->respawnsIn));
 
         return $this;
+    }
+
+    public function complete(\DateTimeImmutable $completedAt): static
+    {
+        $this->completedAt = $completedAt;
+
+        return $this;
+    }
+
+    public function getCompletedAt(): ?\DateTimeImmutable
+    {
+        return $this->completedAt;
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->completedAt !== null;
+    }
+
+    public function shouldAppearOnBoard(): bool
+    {
+        return !$this->isCompleted() || $this->isRespawnImmediatelyAfterDeath();
     }
 
     public function getRespawnsIn(): int
@@ -220,6 +246,19 @@ class Task
         $this->sprite = $sprite;
 
         return $this;
+    }
+
+    public function canBeDeleted(): bool
+    {
+        return $this->boardRow?->getBoard() === null;
+    }
+
+    #[ORM\PreRemove]
+    public function assertCanBeDeleted(): void
+    {
+        if (!$this->canBeDeleted()) {
+            throw new \LogicException('Tasks attached to a board cannot be deleted. Mark them as completed instead.');
+        }
     }
 
     private function minutesInterval(int $minutes): \DateInterval

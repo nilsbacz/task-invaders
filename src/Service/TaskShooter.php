@@ -16,19 +16,12 @@ final readonly class TaskShooter
 
     public function shoot(Task $task, \DateTimeImmutable $shotAt): void
     {
+        $task->complete($shotAt);
+
         if ($task->isRespawnImmediatelyAfterDeath()) {
             $task->scheduleNextSpawnAfterShot($shotAt);
-            $this->entityManager->flush();
-
-            return;
         }
 
-        $boardRow = $task->getBoardRow();
-        if ($boardRow !== null) {
-            $boardRow->removeTask($task);
-        }
-
-        $this->entityManager->remove($task);
         $this->entityManager->flush();
     }
 }

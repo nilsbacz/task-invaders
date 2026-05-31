@@ -34,11 +34,12 @@
                     <article class="panel h-100 p-4">
                         <h3 class="h4 mb-3">{{ row.title }}</h3>
 
-                        {% if row.tasks is empty %}
+                        {% set activeTasks = row.activeTasks %}
+                        {% if activeTasks is empty %}
                             <p class="text-body-secondary mb-0">No tasks yet.</p>
                         {% else %}
                             <ul class="list-group list-group-flush">
-                                {% for task in row.tasks %}
+                                {% for task in activeTasks %}
                                     {% set shootForm = shootForms[task.id] ?? null %}
                                     <li class="list-group-item d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
                                         <span>{{ task.title }}</span>

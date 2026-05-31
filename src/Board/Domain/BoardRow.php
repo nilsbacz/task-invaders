@@ -36,11 +36,8 @@ class BoardRow
     #[ORM\OneToMany(
         mappedBy: 'boardRow',
         targetEntity: Task::class,
-        cascade: [
-                  'persist',
-                  'remove',
-                 ],
-        orphanRemoval: true
+        cascade: ['persist'],
+        orphanRemoval: false
     )]
     private Collection $tasks;
 
@@ -96,6 +93,14 @@ class BoardRow
     public function getTasks(): Collection
     {
         return $this->tasks;
+    }
+
+    /**
+     * @return Collection<int, Task>
+     */
+    public function getActiveTasks(): Collection
+    {
+        return $this->tasks->filter(static fn (Task $task): bool => $task->shouldAppearOnBoard());
     }
 
     public function addTask(Task $task): static

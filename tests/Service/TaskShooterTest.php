@@ -22,7 +22,7 @@ use PHPUnit\Framework\TestCase;
 final class TaskShooterTest extends TestCase
 {
     #[Test]
-    public function itRemovesTaskWhenItDoesNotRespawnImmediately(): void
+    public function itMarksTaskCompletedWhenItDoesNotRespawnImmediately(): void
     {
 
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -30,21 +30,25 @@ final class TaskShooterTest extends TestCase
         $boardRow = new BoardRow();
         $boardRow->addTask($task);
 
-        $entityManager->expects(self::once())->method('remove')->with($task);
+        $entityManager->expects(self::never())->method('remove');
         $entityManager->expects(self::once())->method('flush');
 
         $shooter = new TaskShooter($entityManager);
+        $shotAt = new DateTimeImmutable('2026-05-31T10:00:00+00:00');
 
 
-        $shooter->shoot($task, new DateTimeImmutable('2026-05-31T10:00:00+00:00'));
+        $shooter->shoot($task, $shotAt);
 
 
-        self::assertFalse($boardRow->getTasks()->contains($task));
-        self::assertNull($task->getBoardRow());
+        self::assertSame($shotAt, $task->getCompletedAt());
+        self::assertTrue($task->isCompleted());
+        self::assertFalse($task->shouldAppearOnBoard());
+        self::assertTrue($boardRow->getTasks()->contains($task));
+        self::assertSame($boardRow, $task->getBoardRow());
     }
 
     #[Test]
-    public function itUpdatesSpawnTimingWhenTaskRespawnsImmediately(): void
+    public function itMarksCompletedAndUpdatesSpawnTimingWhenTaskRespawnsImmediately(): void
     {
 
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -56,11 +60,15 @@ final class TaskShooterTest extends TestCase
         $entityManager->expects(self::once())->method('flush');
 
         $shooter = new TaskShooter($entityManager);
+        $shotAt = new DateTimeImmutable('2026-05-31T10:00:00+00:00');
 
 
-        $shooter->shoot($task, new DateTimeImmutable('2026-05-31T10:00:00+00:00'));
+        $shooter->shoot($task, $shotAt);
 
 
+        self::assertSame($shotAt, $task->getCompletedAt());
+        self::assertTrue($task->isCompleted());
+        self::assertTrue($task->shouldAppearOnBoard());
         self::assertSame('2026-05-31T10:15:00+00:00', $task->getSpawnDate()->format(DATE_ATOM));
         self::assertSame('2026-05-31T11:00:00+00:00', $task->getBaseDate()->format(DATE_ATOM));
     }

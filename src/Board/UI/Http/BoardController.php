@@ -42,7 +42,7 @@ final class BoardController extends AbstractController
     public function shoot(Board $board, int $taskId, Request $request): Response
     {
         $task = $this->tasks->find($taskId);
-        if ($task === null || !$this->taskBelongsToBoard($task, $board)) {
+        if ($task === null || !$this->taskCanBeShot($task, $board)) {
             throw $this->createNotFoundException('Task not found.');
         }
 
@@ -60,9 +60,10 @@ final class BoardController extends AbstractController
         return $this->renderBoard($board, $form, $taskId, Response::HTTP_BAD_REQUEST);
     }
 
-    private function taskBelongsToBoard(Task $task, Board $board): bool
+    private function taskCanBeShot(Task $task, Board $board): bool
     {
-        return $task->getBoardRow()?->getBoard()?->getId() === $board->getId();
+        return $task->getBoardRow()?->getBoard()?->getId() === $board->getId()
+            && $task->shouldAppearOnBoard();
     }
 
     private function renderBoard(
