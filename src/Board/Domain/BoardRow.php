@@ -9,6 +9,7 @@ use App\Entity\Task;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DoctrineBoardRowRepository::class)]
 #[ORM\Table(name: 'board_row')]
@@ -21,6 +22,8 @@ class BoardRow
     private ?int $id = null;
 
     #[ORM\Column(length: 32)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 32)]
     private string $title;
 
     #[ORM\Column(name: 'sort_order')]

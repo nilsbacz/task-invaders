@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration;
 
+use App\Board\Application\CreateBoardRow;
 use App\Board\Domain\Board;
 use App\Board\Domain\BoardRow;
 use App\Board\UI\Http\BoardController;
 use App\Entity\Task;
 use App\Enum\TaskRiskLevel;
+use App\Service\BoardRowCreator;
+use App\Service\BoardRowDeleter;
+use App\Service\BoardRowFormFactory;
+use App\Service\BoardRowUpdater;
 use App\Service\TaskShootFormFactory;
 use App\Service\TaskShooter;
 use DateInterval;
@@ -19,6 +24,11 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 #[CoversClass(BoardController::class)]
+#[UsesClass(BoardRowCreator::class)]
+#[UsesClass(BoardRowDeleter::class)]
+#[UsesClass(BoardRowFormFactory::class)]
+#[UsesClass(BoardRowUpdater::class)]
+#[UsesClass(CreateBoardRow::class)]
 #[UsesClass(TaskShootFormFactory::class)]
 #[UsesClass(TaskShooter::class)]
 final class BoardControllerTest extends AbstractDatabaseWebTestCase
@@ -56,6 +66,107 @@ final class BoardControllerTest extends AbstractDatabaseWebTestCase
         self::assertSelectorTextContains('main', 'Sports');
         self::assertSelectorTextContains('main', 'Workout');
         self::assertSelectorExists(sprintf('form[name="task_shoot_%d"]', $task->getId()));
+    }
+
+    #[Test]
+    public function itAddsRowFromBoardDetail(): void
+    {
+        // Arrange
+        $board = $this->createBoard('Row Create Board', false);
+        $boardId = $board->getId();
+        self::assertNotNull($boardId);
+
+        $crawler = $this->client->request('GET', sprintf('/boards/%d', $boardId));
+        self::assertResponseIsSuccessful();
+        $form = $crawler->filter('form[name="board_row_create"]')->form();
+        $formName = $form->getName();
+        $form[sprintf('%s[title]', $formName)] = 'Errands';
+
+        // Act
+        $this->client->submit($form);
+        $this->client->followRedirect();
+
+        // Assert
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('main', 'Errands');
+
+        $this->entityManager->clear();
+        $updatedBoard = $this->boards->find($boardId);
+        self::assertInstanceOf(Board::class, $updatedBoard);
+        $rows = array_values($updatedBoard->getBoardRows()->toArray());
+        self::assertCount(1, $rows);
+        self::assertSame('Errands', $rows[0]->getTitle());
+        self::assertSame(1, $rows[0]->getRowNumber());
+    }
+
+    #[Test]
+    public function itUpdatesRowFromBoardDetail(): void
+    {
+        // Arrange
+        $board = $this->createBoard('Row Update Board', false);
+        $boardId = $board->getId();
+        self::assertNotNull($boardId);
+
+        $boardRow = $this->createBoardRow($board, 'Errands');
+        $boardRowId = $boardRow->getId();
+        self::assertNotNull($boardRowId);
+
+        $crawler = $this->client->request('GET', sprintf('/boards/%d', $boardId));
+        self::assertResponseIsSuccessful();
+        $form = $crawler->filter(sprintf('form[name="board_row_%d"]', $boardRowId))->form();
+        $formName = $form->getName();
+        $form[sprintf('%s[title]', $formName)] = 'Admin';
+
+        // Act
+        $this->client->submit($form);
+        $this->client->followRedirect();
+
+        // Assert
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('main', 'Admin');
+        self::assertSelectorTextNotContains('main', 'Errands');
+
+        $this->entityManager->clear();
+        $updatedRow = $this->entityManager->getRepository(BoardRow::class)->find($boardRowId);
+        self::assertInstanceOf(BoardRow::class, $updatedRow);
+        self::assertSame('Admin', $updatedRow->getTitle());
+    }
+
+    #[Test]
+    public function itRemovesRowFromBoardDetailAndDetachesTasks(): void
+    {
+        // Arrange
+        $board = $this->createBoard('Row Delete Board', false);
+        $boardId = $board->getId();
+        self::assertNotNull($boardId);
+
+        $boardRow = $this->createBoardRow($board, 'Errands');
+        $boardRowId = $boardRow->getId();
+        self::assertNotNull($boardRowId);
+
+        $task = $this->createTask($boardRow, 'Pay bills', false);
+        $taskId = $task->getId();
+        self::assertNotNull($taskId);
+
+        $crawler = $this->client->request('GET', sprintf('/boards/%d', $boardId));
+        self::assertResponseIsSuccessful();
+        $form = $crawler->filter(sprintf('form[name="board_row_delete_%d"]', $boardRowId))->form();
+
+        // Act
+        $this->client->submit($form);
+        $this->client->followRedirect();
+
+        // Assert
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextNotContains('main', 'Errands');
+        self::assertSelectorTextNotContains('main', 'Pay bills');
+
+        $this->entityManager->clear();
+        self::assertNull($this->entityManager->getRepository(BoardRow::class)->find($boardRowId));
+
+        $updatedTask = $this->entityManager->getRepository(Task::class)->find($taskId);
+        self::assertInstanceOf(Task::class, $updatedTask);
+        self::assertNull($updatedTask->getBoardRow());
     }
 
     #[Test]
