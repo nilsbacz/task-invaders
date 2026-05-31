@@ -84,4 +84,22 @@ final class TaskTest extends TestCase
         self::assertSame($description, $task->getTaskDescription());
         self::assertSame($sprite, $task->getSprite());
     }
+
+    #[Test]
+    public function itSchedulesNextSpawnAndBaseDatesFromShotTiming(): void
+    {
+
+        $task = new Task();
+        $shotAt = new DateTimeImmutable('2026-05-31T10:00:00+00:00');
+        $task->setRespawnsIn(30);
+        $task->setReachesBaseIn(90);
+
+
+        $result = $task->scheduleNextSpawnAfterShot($shotAt);
+
+
+        self::assertSame($task, $result);
+        self::assertSame('2026-05-31T10:30:00+00:00', $task->getSpawnDate()->format(DATE_ATOM));
+        self::assertSame('2026-05-31T12:00:00+00:00', $task->getBaseDate()->format(DATE_ATOM));
+    }
 }

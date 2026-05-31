@@ -14,6 +14,10 @@
         </div>
     </section>
 
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success" role="alert">{{ message }}</div>
+    {% endfor %}
+
     <section class="section-heading mb-4">
         <p class="eyebrow">Rows</p>
         <h2 class="h3 mb-0">Board structure</h2>
@@ -35,7 +39,22 @@
                         {% else %}
                             <ul class="list-group list-group-flush">
                                 {% for task in row.tasks %}
-                                    <li class="list-group-item">{{ task.title }}</li>
+                                    {% set shootForm = shootForms[task.id] ?? null %}
+                                    <li class="list-group-item d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+                                        <span>{{ task.title }}</span>
+                                        {% if shootForm is not null %}
+                                            {{ form_start(shootForm, { attr: { class: 'm-0' } }) }}
+                                            {{ form_rest(shootForm) }}
+                                            <button
+                                                class="btn btn-primary btn-sm"
+                                                type="submit"
+                                                aria-label="Shoot {{ task.title }}"
+                                            >
+                                                Shoot
+                                            </button>
+                                            {{ form_end(shootForm, { render_rest: false }) }}
+                                        {% endif %}
+                                    </li>
                                 {% endfor %}
                             </ul>
                         {% endif %}

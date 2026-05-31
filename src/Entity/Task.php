@@ -114,6 +114,18 @@ class Task
         return $this;
     }
 
+    public function getBaseDate(): \DateTimeImmutable
+    {
+        return $this->spawnDate->add($this->minutesInterval($this->reachesBaseIn));
+    }
+
+    public function scheduleNextSpawnAfterShot(\DateTimeImmutable $shotAt): static
+    {
+        $this->spawnDate = $shotAt->add($this->minutesInterval($this->respawnsIn));
+
+        return $this;
+    }
+
     public function getRespawnsIn(): int
     {
         return $this->respawnsIn;
@@ -208,5 +220,10 @@ class Task
         $this->sprite = $sprite;
 
         return $this;
+    }
+
+    private function minutesInterval(int $minutes): \DateInterval
+    {
+        return new \DateInterval(sprintf('PT%dM', max(0, $minutes)));
     }
 }
