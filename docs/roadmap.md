@@ -35,12 +35,12 @@ This is a lightweight checklist for personal planning. No timelines required.
 
 ## Game Mechanics
 
-- [ ] Define task instance model
+- [x] Define task instance model
 - [ ] Calculate invader position from spawn time and base time
 - [ ] Enforce shield blocking rules
 - [ ] Define what happens when a task reaches the base
-- [ ] Track completed shots/task completions
-- [ ] Preserve completion history instead of deleting completed tasks
+- [x] Track completed shots/task completions
+- [x] Preserve completion history instead of deleting completed tasks
 
 ## Stats
 
