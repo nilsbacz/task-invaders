@@ -11,7 +11,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 abstract class AbstractDatabaseWebTestCase extends WebTestCase
@@ -36,7 +39,7 @@ abstract class AbstractDatabaseWebTestCase extends WebTestCase
         self::assertInstanceOf(EntityManagerInterface::class, $entityManager);
 
         self::waitForDatabase($entityManager->getConnection());
-        self::resetSchema($entityManager);
+        self::resetSchema($kernel, $entityManager);
 
         $entityManager->close();
         $kernel->shutdown();
@@ -99,7 +102,7 @@ abstract class AbstractDatabaseWebTestCase extends WebTestCase
         return $board;
     }
 
-    private static function resetSchema(EntityManagerInterface $entityManager): void
+    private static function resetSchema(KernelInterface $kernel, EntityManagerInterface $entityManager): void
     {
         $metadata = $entityManager->getMetadataFactory()->getAllMetadata();
         if ($metadata === []) {
@@ -108,7 +111,17 @@ abstract class AbstractDatabaseWebTestCase extends WebTestCase
 
         $schemaTool = new SchemaTool($entityManager);
         $schemaTool->dropDatabase();
-        $schemaTool->createSchema($metadata);
+
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+
+        $input = new ArrayInput([
+                                 'command'          => 'doctrine:migrations:migrate',
+                                 '--no-interaction' => true,
+                                ]);
+        $output = new BufferedOutput();
+
+        self::assertSame(0, $application->run($input, $output), $output->fetch());
     }
 
     private static function waitForDatabase(Connection $connection): void
