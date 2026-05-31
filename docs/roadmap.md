@@ -33,6 +33,37 @@ This is a lightweight checklist for personal planning. No timelines required.
 - [ ] Shooting tasks
 - [ ] Auto shooting with vacation mode
 
+## Game Mechanics
+
+- [ ] Define task instance model
+- [ ] Calculate invader position from spawn time and base time
+- [ ] Enforce shield blocking rules
+- [ ] Define what happens when a task reaches the base
+- [ ] Track completed shots/task completions
+
+## Pixel Editor
+
+- [ ] Build basic sprite editor
+- [ ] Save sprites
+- [ ] Assign sprites to tasks
+- [ ] Show task sprites on the board
+
+## Task Details
+
+- [ ] Add task descriptions
+- [ ] Support checklist-style task instructions
+- [ ] Show risk level visually
+- [ ] Show shield state visually
+- [ ] Show next spawn/base timing
+
+## Board Experience
+
+- [ ] Render tasks as invaders
+- [ ] Show base/progress per row
+- [ ] Show blocked tasks behind shielded tasks
+- [ ] Add empty states for rows and boards
+- [ ] Add confirmation for destructive actions
+
 ## Wording And Language
 
 - [ ] Implement first wording convention: professional
@@ -49,6 +80,19 @@ This is a lightweight checklist for personal planning. No timelines required.
 - [ ] First prototype hosted on Raspberry Pi
 - [ ] Viewable on `https://nilsbaczynski.de/`
 - [ ] Figure out deployment
+
+## Developer Experience
+
+- [ ] Add fixture command for local demo data
+- [ ] Document local development commands
+- [ ] Add CI status notes to README
+- [ ] Add roadmap/vision links to README
+
+## Data Safety
+
+- [ ] Add backup/export for boards
+- [ ] Add import for boards
+- [ ] Add delete confirmation flows
 
 ## Tutorial
 
