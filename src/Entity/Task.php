@@ -9,6 +9,7 @@ use App\Enum\TaskRiskLevel;
 use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -21,6 +22,8 @@ class Task
     private ?int $id = null;
 
     #[ORM\Column(length: 32)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 32)]
     private string $title;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
@@ -33,18 +36,23 @@ class Task
         enumType: TaskRiskLevel::class,
         columnDefinition: "ENUM('GREEN', 'YELLOW', 'RED') NOT NULL"
     )]
+    #[Assert\NotNull]
     private TaskRiskLevel $riskLevel;
 
     #[ORM\Column]
+    #[Assert\NotNull]
     private \DateTimeImmutable $spawnDate;
 
     #[ORM\Column]
+    #[Assert\GreaterThanOrEqual(value: 0)]
     private int $respawnsIn = 0;
 
     #[ORM\Column]
+    #[Assert\GreaterThanOrEqual(value: 0)]
     private int $spawnsEvery = 0;
 
     #[ORM\Column]
+    #[Assert\GreaterThanOrEqual(value: 0)]
     private int $reachesBaseIn;
 
     #[ORM\Column]
@@ -54,6 +62,7 @@ class Task
     private bool $respawnImmediatelyAfterDeath = false;
 
     #[ORM\Column]
+    #[Assert\GreaterThanOrEqual(value: 0)]
     private int $speedFactor = 0;
 
     #[ORM\Column(nullable: true)]

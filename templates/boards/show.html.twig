@@ -75,6 +75,18 @@
                                     </div>
                                 </div>
 
+                                {% set taskCreateForm = taskCreateForms[row.id] ?? null %}
+                                {% if taskCreateForm is not null %}
+                                    <div class="mt-4">
+                                        <p class="eyebrow mb-2">New task</p>
+                                        {{ form_start(taskCreateForm, { attr: { class: 'board-card-form' } }) }}
+                                        {% include 'boards/_task_form_fields.html.twig' with { form: taskCreateForm } only %}
+                                        {{ form_rest(taskCreateForm) }}
+                                        <button class="btn btn-primary btn-sm" type="submit">Add task</button>
+                                        {{ form_end(taskCreateForm, { render_rest: false }) }}
+                                    </div>
+                                {% endif %}
+
                                 <div class="mt-4">
                                     {% set activeTasks = row.activeTasks %}
                                     {% if activeTasks is empty %}
@@ -83,19 +95,52 @@
                                         <ul class="list-group list-group-flush">
                                             {% for task in activeTasks %}
                                                 {% set shootForm = shootForms[task.id] ?? null %}
-                                                <li class="list-group-item d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
-                                                    <span>{{ task.title }}</span>
-                                                    {% if shootForm is not null %}
-                                                        {{ form_start(shootForm, { attr: { class: 'm-0' } }) }}
-                                                        {{ form_rest(shootForm) }}
-                                                        <button
-                                                            class="btn btn-primary btn-sm"
-                                                            type="submit"
-                                                            aria-label="Shoot {{ task.title }}"
-                                                        >
-                                                            Shoot
+                                                {% set taskUpdateForm = taskUpdateForms[task.id] ?? null %}
+                                                {% set taskDeleteForm = taskDeleteForms[task.id] ?? null %}
+                                                {% set taskUpdateFormId = 'task-update-' ~ task.id %}
+                                                {% set taskDeleteFormId = 'task-delete-' ~ task.id %}
+                                                <li class="list-group-item">
+                                                    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-3">
+                                                        <div>
+                                                            <span class="fw-semibold">{{ task.title }}</span>
+                                                            <div class="small text-body-secondary">
+                                                                {{ task.riskLevel.value|lower|capitalize }} risk
+                                                                {% if task.hasShield %} - Shielded{% endif %}
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex flex-wrap gap-2">
+                                                            {% if shootForm is not null %}
+                                                                {{ form_start(shootForm, { attr: { class: 'm-0' } }) }}
+                                                                {{ form_rest(shootForm) }}
+                                                                <button
+                                                                    class="btn btn-primary btn-sm"
+                                                                    type="submit"
+                                                                    aria-label="Shoot {{ task.title }}"
+                                                                >
+                                                                    Shoot
+                                                                </button>
+                                                                {{ form_end(shootForm, { render_rest: false }) }}
+                                                            {% endif %}
+
+                                                            {% if taskDeleteForm is not null %}
+                                                                {{ form_start(taskDeleteForm, { attr: { class: 'board-card-form board-card-form--delete', id: taskDeleteFormId } }) }}
+                                                                {{ form_rest(taskDeleteForm) }}
+                                                                {{ form_end(taskDeleteForm, { render_rest: false }) }}
+                                                                <button class="btn btn-outline-danger btn-sm" type="submit" form="{{ taskDeleteFormId }}">
+                                                                    Remove
+                                                                </button>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+
+                                                    {% if taskUpdateForm is not null %}
+                                                        {{ form_start(taskUpdateForm, { attr: { class: 'board-card-form', id: taskUpdateFormId } }) }}
+                                                        {% include 'boards/_task_form_fields.html.twig' with { form: taskUpdateForm } only %}
+                                                        {{ form_rest(taskUpdateForm) }}
+                                                        {{ form_end(taskUpdateForm, { render_rest: false }) }}
+                                                        <button class="btn btn-outline-dark btn-sm" type="submit" form="{{ taskUpdateFormId }}">
+                                                            Update task
                                                         </button>
-                                                        {{ form_end(shootForm, { render_rest: false }) }}
                                                     {% endif %}
                                                 </li>
                                             {% endfor %}
