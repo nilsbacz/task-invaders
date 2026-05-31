@@ -65,8 +65,8 @@ function initStarfield() {
 
     function resizeCanvas() {
         devicePixelRatioValue = window.devicePixelRatio || 1;
-        viewportWidth = window.innerWidth;
-        viewportHeight = window.innerHeight;
+        viewportWidth = document.documentElement.clientWidth;
+        viewportHeight = document.documentElement.clientHeight;
 
         canvas.width = Math.max(1, Math.floor(viewportWidth * devicePixelRatioValue));
         canvas.height = Math.max(1, Math.floor(viewportHeight * devicePixelRatioValue));
