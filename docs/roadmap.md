@@ -40,6 +40,15 @@ This is a lightweight checklist for personal planning. No timelines required.
 - [ ] Enforce shield blocking rules
 - [ ] Define what happens when a task reaches the base
 - [ ] Track completed shots/task completions
+- [ ] Preserve completion history instead of deleting completed tasks
+
+## Stats
+
+- [ ] Track how often each task is completed
+- [ ] Track completion history over time
+- [ ] Add basic stats board
+- [ ] Show task completion frequency
+- [ ] Show long-term progress per board
 
 ## Pixel Editor
 
@@ -84,6 +93,7 @@ This is a lightweight checklist for personal planning. No timelines required.
 ## Developer Experience
 
 - [ ] Add fixture command for local demo data
+- [ ] Add development-only fast-forward time feature
 - [ ] Document local development commands
 - [ ] Add CI status notes to README
 - [ ] Add roadmap/vision links to README

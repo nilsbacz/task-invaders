@@ -54,11 +54,17 @@ The exact wording can change depending on whether the app uses casual or gamifie
 
 Recurring tasks should spawn according to their configuration.
 
+Time-based behavior should be testable. The app should eventually support a development-only way to fast-forward time so spawning, movement, base reaches, and recurring completion behavior can be tested without waiting in real time.
+
 If a task spawns more often than it reaches the base, multiple instances of that task can exist at the same time. This makes overdue or repeated responsibilities visible instead of hiding them behind a single checklist item.
+
+Completing or shooting a task should not erase its history. Completion should be recorded so the app can later show statistics, streaks, frequency, and long-term progress. Even one-time tasks should leave a durable completion record after they are cleared from the active board.
 
 Some tasks should be immediately clearable again after completion. This is useful when doing the task early should create a buffer and move the next pressure point further into the future.
 
 Other tasks should not be immediately clearable again. This is useful for habits where completing the task too often should not distort the intended rhythm.
+
+The active board should only show what still needs attention. Historical completions can be hidden from the normal board view while still remaining available for stats and audit-style history.
 
 ## Pixel Editor
 
