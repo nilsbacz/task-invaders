@@ -33,6 +33,9 @@ These instructions apply to the whole repository.
 
 - Treat tests as executable documentation. Prefer clear test names and simple AAA structure over large explanatory comments in production code.
 - Use Arrange, Act, Assert in each test. Separate the phases with blank lines when it improves readability.
+- Every concrete test class must use PHPUnit coverage metadata. Prefer one narrow `#[CoversClass(...)]` for the class or boundary directly under test.
+- Keep `#[CoversClass]` restrictive. Do not mark collaborators as covered just because they are exercised by a workflow; use `#[UsesClass(...)]` for supporting DTOs, entities, services, or value objects when needed.
+- For integration tests, cover the controller or primary integration boundary being tested and keep service/domain collaborators out of `#[CoversClass]` unless that test class is intentionally and directly testing them.
 - Maintain full test coverage for new and changed behavior.
 - Add or update integration tests for controller, persistence, form, service wiring, or user-facing workflow changes.
 - Keep unit tests focused on domain and service behavior. Use integration tests when the behavior depends on Symfony, Doctrine, routing, forms, or HTTP.

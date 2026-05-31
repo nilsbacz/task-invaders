@@ -4,17 +4,25 @@ declare(strict_types=1);
 
 namespace App\Tests\Entity;
 
+use App\Board\Domain\Board;
 use App\Board\Domain\BoardRow;
 use App\Enum\TaskRiskLevel;
 use App\Entity\Sprite;
 use App\Entity\Task;
 use App\Entity\TaskDescription;
 use DateTimeImmutable;
+use LogicException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Task::class)]
+#[UsesClass(Board::class)]
+#[UsesClass(BoardRow::class)]
+#[UsesClass(Sprite::class)]
+#[UsesClass(TaskDescription::class)]
+#[UsesClass(TaskRiskLevel::class)]
 final class TaskTest extends TestCase
 {
     #[Test]
@@ -30,6 +38,10 @@ final class TaskTest extends TestCase
         self::assertFalse($task->hasShield());
         self::assertFalse($task->isRespawnImmediatelyAfterDeath());
         self::assertSame(0, $task->getSpeedFactor());
+        self::assertNull($task->getCompletedAt());
+        self::assertFalse($task->isCompleted());
+        self::assertTrue($task->shouldAppearOnBoard());
+        self::assertTrue($task->canBeDeleted());
         self::assertNull($task->getTaskDescription());
         self::assertNull($task->getSprite());
     }
@@ -83,5 +95,83 @@ final class TaskTest extends TestCase
         self::assertSame(4, $task->getSpeedFactor());
         self::assertSame($description, $task->getTaskDescription());
         self::assertSame($sprite, $task->getSprite());
+    }
+
+    #[Test]
+    public function itMarksTaskCompleted(): void
+    {
+
+        $task = new Task();
+        $completedAt = new DateTimeImmutable('2026-05-31T10:00:00+00:00');
+
+
+        $result = $task->complete($completedAt);
+
+
+        self::assertSame($task, $result);
+        self::assertSame($completedAt, $task->getCompletedAt());
+        self::assertTrue($task->isCompleted());
+        self::assertFalse($task->shouldAppearOnBoard());
+    }
+
+    #[Test]
+    public function itKeepsImmediatelyRespawningCompletedTasksVisibleOnTheBoard(): void
+    {
+
+        $task = new Task();
+        $task->setRespawnImmediatelyAfterDeath(true);
+        $task->complete(new DateTimeImmutable('2026-05-31T10:00:00+00:00'));
+
+
+        self::assertTrue($task->isCompleted());
+        self::assertTrue($task->shouldAppearOnBoard());
+    }
+
+    #[Test]
+    public function itSchedulesNextSpawnAndBaseDatesFromShotTiming(): void
+    {
+
+        $task = new Task();
+        $shotAt = new DateTimeImmutable('2026-05-31T10:00:00+00:00');
+        $task->setRespawnsIn(30);
+        $task->setReachesBaseIn(90);
+
+
+        $result = $task->scheduleNextSpawnAfterShot($shotAt);
+
+
+        self::assertSame($task, $result);
+        self::assertSame('2026-05-31T10:30:00+00:00', $task->getSpawnDate()->format(DATE_ATOM));
+        self::assertSame('2026-05-31T12:00:00+00:00', $task->getBaseDate()->format(DATE_ATOM));
+    }
+
+    #[Test]
+    public function itRejectsDeletionWhenAttachedToBoard(): void
+    {
+
+        $board = new Board();
+        $boardRow = new BoardRow();
+        $task = new Task();
+        $board->addBoardRow($boardRow);
+        $boardRow->addTask($task);
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Tasks attached to a board cannot be deleted.');
+
+
+        $task->assertCanBeDeleted();
+    }
+
+    #[Test]
+    public function itAllowsDeletionWhenNotAttachedToBoard(): void
+    {
+
+        $task = new Task();
+
+
+        $task->assertCanBeDeleted();
+
+
+        self::assertTrue($task->canBeDeleted());
     }
 }
