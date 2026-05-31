@@ -4,7 +4,7 @@ Task Invaders is a personal task board that turns recurring goals, routines, and
 
 The core idea is: an invader is a task.
 
-Tasks spawn onto board rows, move toward the base over time, and can be cleared by completing them. The board should make priorities visible without becoming a heavy planning tool. It should help answer one practical question: what should be handled next?
+Tasks spawn into board lanes, move toward the base over time, and can be cleared by completing them. The board should make priorities visible without becoming a heavy planning tool. It should help answer one practical question: what should be handled next?
 
 ## Product Direction
 
@@ -14,15 +14,33 @@ The app is for personal routines, shared household responsibilities, and recurri
 
 The system should stay simple enough to use casually. It should not become a full project management suite, calendar replacement, or productivity framework.
 
-## Board Concept
+## Board And Lane Concept
 
-A board contains rows. Rows limit how many parallel task lanes exist and help prevent overload.
+A board contains lanes. Lanes limit how many parallel task streams exist and help prevent overload.
 
-Tasks belong to a row and can be moved to another row when needed. A board may have a row limit, with 20 rows as a possible upper bound.
+Tasks belong to a lane and can be moved to another lane when needed. A board may have a lane limit, with 20 lanes as a possible upper bound.
 
-Multiple tasks can exist on the same row. If a task has a shield, tasks behind it cannot be cleared first. This creates a natural priority rule: shielded tasks can block lower-priority work in the same row until they are completed.
+Multiple tasks can exist in the same lane. If a task has a shield, tasks behind it cannot be cleared first. This creates a natural priority rule: shielded tasks can block lower-priority work in the same lane until they are completed.
 
 Tasks without a shield do not block other tasks behind them. This allows optional or low-pressure tasks to exist without preventing more important work.
+
+The implementation may still use row-oriented names where they already exist, but the product language should prefer lane because it fits both casual task wording and the arcade metaphor.
+
+## Board Playfield
+
+The board detail page should become the active playfield, replacing the current form-heavy board structure view.
+
+The playfield should make task pressure spatial. Each lane is shown as a vertical field. Tasks spawn near the top and move downward toward the base as time passes. A task's vertical position is calculated from the percentage of time elapsed between its spawn time and base time. The lower a task appears, the closer it is to needing attention.
+
+The top of the board should stay compact: board breadcrumb, board title, a short expandable board description, and a lane add action. Board setup should remain available, but it should not dominate the normal board view.
+
+Each lane should have a clear title and an add-task action. Upcoming tasks should be shown per lane above the active field with their respawn timing. Upcoming tasks must be hideable so the board can stay focused during daily use.
+
+Active tasks should appear as invader tiles. A tile should communicate the task title or sprite, risk level, shield state, and remaining time without requiring the user to open details. Clicking a task opens its details and editing surface.
+
+When multiple tasks occupy a similar position in the same lane, they should be displayed beside each other where possible. If there are too many to display cleanly, they may overlap in a controlled way and remain clickable, with a popup or detail widget showing the stacked tasks.
+
+Disabled, finished, inactive, and non-respawning tasks should live on a separate task overview page. The active playfield should show what can currently affect the board.
 
 ## Task Concept
 
@@ -32,7 +50,7 @@ Important task properties include:
 
 - Name
 - Description
-- Row
+- Lane
 - First spawn time
 - Spawn interval
 - Time until it reaches the base
@@ -66,6 +84,20 @@ Other tasks should not be immediately clearable again. This is useful for habits
 
 The active board should only show what still needs attention. Historical completions can be hidden from the normal board view while still remaining available for stats and audit-style history.
 
+Shooting a task always means completing the real task. The arcade language should never create a separate game-only action that can clear a task without the underlying work being done.
+
+## Base Outcomes
+
+What happens when a task reaches the base depends on its risk level.
+
+Green tasks are low-pressure tasks. When a green task reaches the base, it should simply respawn according to its schedule. It should not interrupt the board.
+
+Yellow tasks are medium-pressure tasks. When a yellow task reaches the base, it should be highlighted strongly. If it remains at the base for more than 10% of its own spawn-to-base lifetime, it should escalate into red behavior. This escalation belongs to the current active task instance. After the task is shot, future instances should behave as yellow again.
+
+Red tasks are high-pressure tasks. When a red task reaches the base, the board view changes into a blocking focus state: only that task is displayed, and nothing else on the board is visible until the task is completed.
+
+If multiple red-behaving tasks are waiting at the base, the blocking focus state should show the task that reached the base first. If two tasks reach the base at the exact same time, the task that was added most recently should be shown first. After the focused task is completed, the next waiting red-behaving task should appear immediately.
+
 ## Pixel Editor
 
 The pixel editor is the spawn chamber.
@@ -78,20 +110,20 @@ The editor should stay focused and simple. It exists to make task invaders perso
 
 Presets should make it easy to create a useful board quickly.
 
-A preset can define rows, task defaults, and example routines. Presets should support import and export so setups can be backed up, shared, or reused.
+A preset can define lanes, task defaults, and example routines. Presets should support import and export so setups can be backed up, shared, or reused.
 
 Users should eventually be able to create a preset from the current board setup.
 
 ## Language And Tone
 
-The app should support at least two wording modes:
+The app should support language as two separate choices:
 
-- casual: practical, calm task wording.
-- Gamified: arcade-inspired task wording.
+- Tone: casual or gamified.
+- Locale: English or German.
 
-German translations may be supported in the future.
+Casual tone should use practical task wording. Gamified tone should use arcade-inspired wording.
 
-The underlying behavior should stay the same across wording modes. Only labels, descriptions, and user-facing language should change.
+The underlying behavior should stay the same across tones and locales, but the board presentation may change slightly with the chosen tone. Casual mode can keep labels calmer and more task-oriented. Gamified mode can lean further into invaders, shooting, base pressure, and arcade status language.
 
 ## Accounts And Sharing
 
